@@ -16,16 +16,23 @@ def readNumber():
     return number
 
 while True:
-    print("Modus eingeben (0 = Aus, 1 = An):")
+    print("Modus eingeben:\n(0 = Aus, 1 = warmes Licht, 2 = kaltes Licht, q = beenden)")
     var = input("")
     if not var:
         continue
+    if var == "q":
+        quit()
+    else:
+        pass
 
     writeNumber(int(var))
     number = readNumber()
     if number == 0:
         print("Aus")
     elif number == 1:
-        print("An")
+        print("An (warm)")
+    elif number == 2:
+        print("An (kalt)")
     else:
         print("ungültige Eingabe")
+

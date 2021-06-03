@@ -1,12 +1,12 @@
 #include <Wire.h>
-//#include <Adafruit_NeoPixel.h>
+#include <Adafruit_NeoPixel.h>
 
 // set the PIN of your DATA IN Port
-//#define PIN        2
+#define PIN        2
 // set the number of RGB-LEDs you want to adress
-//#define NUMPIXELS 24
+#define NUMPIXELS 24
 // init your LED ring
-//Adafruit_NeoPixel ring(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel ring(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 // set the Address for the I2C connection to the Jetson (0x40 as default)
 int i2cAddress = 0x40;
@@ -21,7 +21,7 @@ void setup()
   Wire.onRequest(sendData);
 
   pinMode(LED_BUILTIN, OUTPUT);
-  //ring.begin();
+  ring.begin();
 }
 
 void receiveEvent(int bytes) {
@@ -32,9 +32,27 @@ void loop()
 {
   if(ledState == 0) {
     digitalWrite(LED_BUILTIN, LOW);
+    for(int i=0; i<NUMPIXELS; i++) {
+      // set the color; dark
+      ring.setPixelColor(i, ring.Color(0, 0, 0));
+      ring.show();
+    }
   }
   if(ledState == 1) {
     digitalWrite(LED_BUILTIN, HIGH);
+    for(int i=0; i<NUMPIXELS; i++) {
+      // set the color; warm white
+      ring.setPixelColor(i, ring.Color(255, 175, 45));
+      ring.show();
+    }
+  }
+  if(ledState == 2) {
+    digitalWrite(LED_BUILTIN, HIGH);
+    for(int i=0; i<NUMPIXELS; i++) {
+      // set the color; full brightness (cold)
+      ring.setPixelColor(i, ring.Color(255, 255, 255));
+      ring.show();
+    }
   }
   else {}
 }
