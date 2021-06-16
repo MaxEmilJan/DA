@@ -5,10 +5,12 @@ from PIL import Image
 pytesseract.pytesseract.tesseract_cmd = r'/home/max/anaconda3/envs/DA/bin/tesseract'
 
 #focal_length = "5cm"
-number_image = "04"
+position_light = "rechts_links"
+time_shutter = "12"
+number_image = "5"
 
 # loading grayscaled image
-img = cv.imread("images/image00000" + number_image + ".jpg")
+img = cv.imread("images/Ring, k=2/" + position_light + "_" + time_shutter + "ms_" + number_image + ".jpg")
 # blur the image to reduce noise
 img_blur = cv.GaussianBlur(img[...,0], (11,11), 0)
 # Canny Edge Detection
@@ -54,14 +56,14 @@ for cnt in contours:
     # extract text
     text = pytesseract.image_to_string(img_roi_thresh)
     print(str(number_contour) + ": " + str(text))
-    #cv.imshow("ROI fill", img_cut)
-    #cv.imshow("ROI thresh", img_roi_thresh)
+    cv.imshow("ROI fill", img_cut)
+    cv.imshow("ROI thresh", img_roi_thresh)
     cv.waitKey(0)
     cv.destroyAllWindows()
 
 # show images
 cv.imshow("Image BoundingBoxes", img_box)
-cv.imshow("Image Canny", img_close_1)
+cv.imshow("Image Canny", img_canny)
 cv.imshow("Image Fill", img_fill_inv)
 cv.imshow("Image Dilate", img_dil)
 cv.waitKey(0)
