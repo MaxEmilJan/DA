@@ -19,8 +19,8 @@ def text_recognition(text_img, img_roi, square):
         text_img = text_img + text_digit.group()[1:5]
     else:
         pass
-    cv.imshow("ROI", img_roi)
-    cv.imshow("ROI thresh", img_roi_thresh)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+    #cv.imshow("ROI", img_roi)
+    #cv.imshow("ROI thresh", img_roi_thresh)
+    #cv.waitKey(0)
+    #cv.destroyAllWindows()
     return text_img #, img_box

@@ -7,16 +7,15 @@ def canny_edge_detection(img_preprocessed):
     img_preprocessed = np.uint8(img_preprocessed)
     img_canny = cv.Canny(img_preprocessed, 150, 200, apertureSize=3, L2gradient=True)
     # mellow closing the image to close edges with small gaps
-    filter_close_1 = cv.getStructuringElement(cv.MORPH_RECT, (5,5))
+    filter_close_1 = cv.getStructuringElement(cv.MORPH_RECT, (4,4))
     img_close_1 = cv.morphologyEx(img_canny, cv.MORPH_CLOSE, filter_close_1)
-    
+    img_cnt_delete = img_close_1.copy()
     #-----edit-----
     
     # find contours and their hierarchy
     contours, hierarchy = cv.findContours(img_close_1, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
     # check if a contour has more then 3 child contours
     for i in range(len(hierarchy[0])):
-        print(i)
         count_children = 0
         index_child = 0
         if hierarchy[0][i][2] != -1:
@@ -27,16 +26,17 @@ def canny_edge_detection(img_preprocessed):
                 index_child = hierarchy[0][index_child][0]
         else:
             pass
-        print("contour: " + str(i) + "; number of child contours: " + str(count_children))
-        if count_children > 1:
+        #print("contour: " + str(i) + "; number of child contours: " + str(count_children))
+        if count_children > 3:
             cnt_delete = contours[i]
-            print(len(cnt_delete))
+            for j in cnt_delete:
+                img_cnt_delete[j[0][1], j[0][0]] = 0
         else:
             pass
     #-----edit-----
     
     # only keep closed edges
-    img_fill = img_close_1.copy()
+    img_fill = img_cnt_delete.copy()
     h_img, w_img = img_fill.shape[:2]
     mask_fill = np.zeros((h_img + 2, w_img + 2), dtype=np.uint8)
     cv.floodFill(img_fill, mask_fill, (0,0), 255)
@@ -51,13 +51,14 @@ def canny_edge_detection(img_preprocessed):
     filter_close_2 = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
     img_close_2 = cv.morphologyEx(img_dil, cv.MORPH_CLOSE, filter_close_2)
     # plot the result
-    cv.imshow("Canny", img_canny)
+    #cv.imshow("Canny", img_canny)
     #cv.imshow("closed", img_close_1)
-    cv.imshow("flooded", img_fill_inv)
+    #cv.imshow("filtered", img_cnt_delete)
+    #cv.imshow("flooded", img_fill_inv)
     #cv.imshow("boxes", img_close_2)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
-    return img_close_2, contours, hierarchy
+    #cv.waitKey(0)
+    #cv.destroyAllWindows()
+    return img_close_2
 
 #img_blur = cv.imread("vignetting_correction/test_blur.jpg")[...,0]
 #img_edge, contours, hierarchy, roi_candidate = canny_edge_detection(img_blur)
