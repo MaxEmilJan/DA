@@ -9,5 +9,5 @@ def load_image(name_image):
     height, width = img_cut.shape
     return img_cut, height, width
 
-# img, height, width = load_image("vignett_500µs.jpg")
-# cv.imwrite("test_roi_2.jpg", img)
+#img, height, width = load_image("images/Streifen_2,8/3ms_2,8_1.jpg")
+#cv.imwrite("test_roi.jpg", img)

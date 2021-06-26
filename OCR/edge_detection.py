@@ -9,6 +9,7 @@ def canny_edge_detection(img_preprocessed):
     # mellow closing the image to close edges with small gaps
     filter_close_1 = cv.getStructuringElement(cv.MORPH_RECT, (5,5))
     img_close_1 = cv.morphologyEx(img_canny, cv.MORPH_CLOSE, filter_close_1)
+    
     # only keep closed edges
     img_fill = img_close_1.copy()
     h_img, w_img = img_fill.shape[:2]
@@ -24,4 +25,15 @@ def canny_edge_detection(img_preprocessed):
     # close image to fill holes inside the edges
     filter_close_2 = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
     img_close_2 = cv.morphologyEx(img_dil, cv.MORPH_CLOSE, filter_close_2)
+    # plot the result
+    cv.imshow("Canny", img_canny)
+    cv.imshow("closed", img_close_1)
+    cv.imshow("flooded", img_fill_inv)
+    cv.imshow("boxes", img_close_2)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
     return img_close_2
+
+#img_blur = cv.imread("vignetting_correction/test_blur.jpg")[...,0]
+#img_edge, contours, hierarchy, roi_candidate = canny_edge_detection(img_blur)
+#cv.imwrite("vignetting_correction/test_edge.jpg", img_edge)
