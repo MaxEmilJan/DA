@@ -15,18 +15,26 @@ def orientation_correction(cnt, img_copy):
     if width > height:
         # if width > height then P0 is in top left position (0,0)
         dst_pts = np.array([[0,0], [width-1,0], [width-1,height-1], [0,height-1]], dtype="float32")
+        # get the rotation-matrix
+        M = cv.getPerspectiveTransform(src_pts, dst_pts)
+        # multiply img-matix with rotation-matrix to obtain corrected image
+        img_rot = cv.warpPerspective(img_copy, M, (width, height))
         square = False
     elif width < height:
         # if width < height P0 is in bottom left position --> P1 is top left (0,0)
-        dst_pts = np.array([[0,height-1], [0,0], [width-1,0], [width-1,height-1]], dtype="float32")
+        dst_pts = np.array([[0,width-1], [0,0], [height-1,0], [height-1,width-1]], dtype="float32")
+        # get the rotation-matrix
+        M = cv.getPerspectiveTransform(src_pts, dst_pts)
+        # multiply img-matix with rotation-matrix to obtain corrected image
+        img_rot = cv.warpPerspective(img_copy, M, (height, width))
         square = False
     else:
         # if the roi is square, any orientation could be possible
         # any rotation must be checked later in order to recognize the text
         dst_pts = np.array([[0,0], [width-1,0], [width-1,height-1], [0,height-1]], dtype="float32")
+        # get the rotation-matrix
+        M = cv.getPerspectiveTransform(src_pts, dst_pts)
+        # multiply img-matix with rotation-matrix to obtain corrected image
+        img_rot = cv.warpPerspective(img_copy, M, (width, height))
         square = True
-    # get the rotation-matrix
-    M = cv.getPerspectiveTransform(src_pts, dst_pts)
-    # multiply img-matix with rotation-matrix to obtain corrected image
-    img_rot = cv.warpPerspective(img_copy, M, (width, height))
     return img_rot, square
