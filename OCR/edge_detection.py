@@ -10,6 +10,31 @@ def canny_edge_detection(img_preprocessed):
     filter_close_1 = cv.getStructuringElement(cv.MORPH_RECT, (5,5))
     img_close_1 = cv.morphologyEx(img_canny, cv.MORPH_CLOSE, filter_close_1)
     
+    #-----edit-----
+    
+    # find contours and their hierarchy
+    contours, hierarchy = cv.findContours(img_close_1, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+    # check if a contour has more then 3 child contours
+    for i in range(len(hierarchy[0])):
+        print(i)
+        count_children = 0
+        index_child = 0
+        if hierarchy[0][i][2] != -1:
+            count_children += 1
+            index_child = hierarchy[0][i][2]
+            while hierarchy[0][index_child][0] != -1:
+                count_children += 1
+                index_child = hierarchy[0][index_child][0]
+        else:
+            pass
+        print("contour: " + str(i) + "; number of child contours: " + str(count_children))
+        if count_children > 1:
+            cnt_delete = contours[i]
+            print(len(cnt_delete))
+        else:
+            pass
+    #-----edit-----
+    
     # only keep closed edges
     img_fill = img_close_1.copy()
     h_img, w_img = img_fill.shape[:2]
@@ -27,12 +52,12 @@ def canny_edge_detection(img_preprocessed):
     img_close_2 = cv.morphologyEx(img_dil, cv.MORPH_CLOSE, filter_close_2)
     # plot the result
     cv.imshow("Canny", img_canny)
-    cv.imshow("closed", img_close_1)
+    #cv.imshow("closed", img_close_1)
     cv.imshow("flooded", img_fill_inv)
-    cv.imshow("boxes", img_close_2)
+    #cv.imshow("boxes", img_close_2)
     cv.waitKey(0)
     cv.destroyAllWindows()
-    return img_close_2
+    return img_close_2, contours, hierarchy
 
 #img_blur = cv.imread("vignetting_correction/test_blur.jpg")[...,0]
 #img_edge, contours, hierarchy, roi_candidate = canny_edge_detection(img_blur)
