@@ -30,10 +30,6 @@ def text_recognition(text_img, img_roi, square):
         M = cv.getRotationMatrix2D(center, 180, 1.0)
         # rotate ROI 180 degrees
         img_rot = cv.warpAffine(img_roi_thresh, M, (width, height))
-        cv.imshow("roi", img_roi_thresh)
-        cv.imshow("rot", img_rot)
-        cv.waitKey(0)
-        cv.destroyAllWindows()
         # repeat text recognition and pattern extraction
         text_roi = pytesseract.image_to_string(img_rot)
         print(text_roi)

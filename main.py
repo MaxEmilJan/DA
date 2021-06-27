@@ -13,8 +13,8 @@ from OCR.orientation_correction import orientation_correction
     # t = 12ms
   
 # select a test image (1 to 10)
-number_image = "11"
-name_img = "images/Streifen_2,8/3ms_2,8_" + number_image + ".jpg"
+number_image = "15"
+name_img = "images/Ring_full, k=2/image00000" + number_image + ".jpg"
 
 # load vignetting_correction_mask.npy to work with this array
 vignett_mask = np.load("OCR/vignetting_correction/vignetting_correction_mask.npy")
@@ -49,9 +49,9 @@ print(text)
 print("Done")
 
 #cv.imshow("Image", img)
-#cv.imshow("Image corrected", img_corrected)
+cv.imshow("Image corrected", img_corrected)
 #cv.imshow("Image preprocessed", img_preprocessed)
 #cv.imshow("Image edges", img_edges)
 #cv.imshow("Image ROIs", img_roi)
-#cv.waitKey(0)
-#cv.destroyAllWindows()
+cv.waitKey(0)
+cv.destroyAllWindows()
