@@ -10,11 +10,11 @@ from OCR.orientation_correction import orientation_correction
 # used camera parameters:
     # f = 5cm
     # k = 2
-    # t = 12ms
+    # t = 1,5ms
   
 # select a test image (1 to 10)
-number_image = "15"
-name_img = "images/Ring_full, k=2/image00000" + number_image + ".jpg"
+number_image = "1"
+name_img = "images/Dataset_Stripe/1,5ms_k2_" + number_image + ".jpg"
 
 # load vignetting_correction_mask.npy to work with this array
 vignett_mask = np.load("OCR/vignetting_correction/vignetting_correction_mask.npy")
@@ -22,13 +22,14 @@ vignett_mask = np.load("OCR/vignetting_correction/vignetting_correction_mask.npy
 text = ""
 
 # call the function to load the image
-img, height, width = load_image(name_img)
+img = load_image(name_img)
 # call the function to remove the vignetting
 img_corrected = vignetting_correction(img, vignett_mask)
+img_rgb = cv.cvtColor(img_corrected, cv.COLOR_GRAY2RGB)
 # call the function to preprocess the image
 img_preprocessed = preprocessing(img_corrected)
 # call the function to detect edges
-img_edges = canny_edge_detection(img_preprocessed)
+_, img_edges, _ = canny_edge_detection(img_preprocessed)
 # find contours
 contours, _ = cv.findContours(img_edges, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 # loop through all the detected edges
@@ -36,11 +37,20 @@ for i in contours:
     # get area of ROI
     area = cv.contourArea(i)
     # filter all found contours which are too small to contain characters
-    if area >= 5000:
+    if area >= 25000:
         # deskew ROI
-        img_roi, square = orientation_correction(i, img_corrected)
+        img_roi, square, box = orientation_correction(i, img_corrected)
         # text recognition in ROI
-        text = text_recognition(text, img_roi, square)
+        text, match = text_recognition(text, img_roi, square)
+        # draw a box and the detected text to the original image, if a match was found
+        if match == True:
+            box = np.int0(box)
+            # draw green box
+            cv.drawContours(img_rgb,[box],0,(0,255,0),2)
+            # put recognized text in top left corner
+            cv.putText(img_rgb, text, (25, 100), cv.FONT_HERSHEY_SIMPLEX, 3, (0,255,0))
+        else:
+            pass
     else:
         pass
 
@@ -49,9 +59,8 @@ print(text)
 print("Done")
 
 #cv.imshow("Image", img)
-cv.imshow("Image corrected", img_corrected)
-#cv.imshow("Image preprocessed", img_preprocessed)
-#cv.imshow("Image edges", img_edges)
-#cv.imshow("Image ROIs", img_roi)
+#cv.imshow("Image corrected", img_corrected)
+#cv.imshow("img_preprocessed", img_preprocessed)
+cv.imshow("Image edges", img_rgb)
 cv.waitKey(0)
 cv.destroyAllWindows()
