@@ -37,7 +37,7 @@ void loop()
   }
   for(int i=8; i<NUMPIXELS; i++) {
     // set the color; dark
-    strip.setPixelColor(i, strip.Color(255, 255, 255));
+    strip.setPixelColor(i, strip.Color(150, 150, 150));
     strip.show();
   }
 //  if(ledState == 0) {
