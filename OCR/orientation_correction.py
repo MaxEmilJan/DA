@@ -37,4 +37,4 @@ def orientation_correction(cnt, img_copy):
         # multiply img-matix with rotation-matrix to obtain corrected image
         img_rot = cv.warpPerspective(img_copy, M, (width, height))
         square = True
-    return img_rot, square
+    return img_rot, square, box

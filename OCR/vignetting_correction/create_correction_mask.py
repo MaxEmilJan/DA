@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 # loading plain image (white background) to measure vignetting
 img_vignett = cv.imread("vignett_2,5ms.jpg")[:,:,0]
 # select ROI and only keep this part
-img_roi = img_vignett[0:1200, 150:1790]
+img_roi = img_vignett[300:1075, 150:1790]
 # get the resolution of the image (1920x1200 in this case)
 height, width = img_roi.shape
 

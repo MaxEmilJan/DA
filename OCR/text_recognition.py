@@ -11,15 +11,15 @@ def text_recognition(text_img, img_roi, square):
     _, img_roi_thresh = cv.threshold(img_roi, 100, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
     # extract the text which is visible in the ROI
     text_roi = pytesseract.image_to_string(img_roi_thresh)
-    print(text_roi)
     # add the text to a string if it contains a "#" symbol followed by 4 digits
     text_digit = re.search(r"#(\d{4})", text_roi)
     if text_digit is not None:
         # only add the digits and not the "#"
         text_img = text_img + text_digit.group()[1:5]
-        print("fist attempt: match found -" + text_img + "-")
+        match = True
+        #print("fist attempt: match found -" + text_img + "-")
     else:
-        print("first attempt: no match found")
+        #print("first attempt: no match found")
         # if no match was detected, check if the label is upside down and try again
         # get shape of ROI
         height = img_roi_thresh.shape[0]
@@ -32,16 +32,17 @@ def text_recognition(text_img, img_roi, square):
         img_rot = cv.warpAffine(img_roi_thresh, M, (width, height))
         # repeat text recognition and pattern extraction
         text_roi = pytesseract.image_to_string(img_rot)
-        print(text_roi)
         text_digit = re.search(r"#(\d{4})", text_roi)
         if text_digit is not None:
             # only add the digits and not the "#"
             text_img = text_img + text_digit.group()[1:5]
-            print("second attempt: match found -" + text_img + "-")
+            match = True
+            #print("second attempt: match found -" + text_img + "-")
         else:
-            print("second attempt: no match found")
+            match = False
+            #print("second attempt: no match found")
     #cv.imshow("ROI", img_roi)
     #cv.imshow("ROI thresh", img_roi_thresh)
     #cv.waitKey(0)
     #cv.destroyAllWindows()
-    return text_img
+    return text_img, match
