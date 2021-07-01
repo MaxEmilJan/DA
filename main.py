@@ -18,6 +18,9 @@ name_img = "images/Dataset_Stripe/1,5ms_k2_" + number_image + ".jpg"
 
 # load vignetting_correction_mask.npy to work with this array
 vignett_mask = np.load("OCR/vignetting_correction/vignetting_correction_mask.npy")
+# create the necessary filters for morphologic operations
+filter_close = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
+filter_dil = cv.getStructuringElement(cv.MORPH_RECT, (51,51))
 # create a string to write the recognized text to
 text = ""
 
@@ -29,7 +32,7 @@ img_rgb = cv.cvtColor(img_corrected, cv.COLOR_GRAY2RGB)
 # call the function to preprocess the image
 img_preprocessed = preprocessing(img_corrected)
 # call the function to detect edges
-_, img_edges, _ = canny_edge_detection(img_preprocessed)
+img_edges, _ = canny_edge_detection(img_preprocessed, filter_close, filter_dil)
 # find contours
 contours, _ = cv.findContours(img_edges, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
 # loop through all the detected edges
