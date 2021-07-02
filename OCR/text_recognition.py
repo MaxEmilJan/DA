@@ -1,12 +1,14 @@
 import cv2 as cv
 import pytesseract
 import re
+import time
 #from edge_detection import canny_edge_detection
 # definde the PATH to your tesseract sidepackage
 pytesseract.pytesseract.tesseract_cmd = r'/home/max/anaconda3/envs/DA/bin/tesseract'
 
 # function to evaluate the detected edges and areas
 def text_recognition(text_img, img_roi, square):
+    startTime = time.time()
     # apply thresholding to the ROI
     _, img_roi_thresh = cv.threshold(img_roi, 100, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
     # extract the text which is visible in the ROI
@@ -45,4 +47,5 @@ def text_recognition(text_img, img_roi, square):
     #cv.imshow("ROI thresh", img_roi_thresh)
     #cv.waitKey(0)
     #cv.destroyAllWindows()
+    print("text_recognition: " + str(time.time()-startTime))
     return text_img, match

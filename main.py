@@ -1,3 +1,4 @@
+import time
 import numpy as np
 import cv2 as cv
 from load_image import load_image
@@ -11,9 +12,9 @@ from OCR.orientation_correction import orientation_correction
     # f = 5cm
     # k = 2
     # t = 1,5ms
-  
-# select a test image (1 to 10)
-number_image = "1"
+
+# select a test image (1 to 38)
+number_image = "8"
 name_img = "images/Dataset_Stripe/1,5ms_k2_" + number_image + ".jpg"
 
 # load vignetting_correction_mask.npy to work with this array
@@ -23,6 +24,9 @@ filter_close = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
 filter_dil = cv.getStructuringElement(cv.MORPH_RECT, (51,51))
 # create a string to write the recognized text to
 text = ""
+
+# start runtime measurement 
+startTime = time.time()
 
 # call the function to load the image
 img = load_image(name_img)
@@ -61,9 +65,15 @@ for i in contours:
 print(text)
 print("Done")
 
+cv.imwrite("output_"+number_image+".jpg", img_rgb)
 #cv.imshow("Image", img)
 #cv.imshow("Image corrected", img_corrected)
 #cv.imshow("img_preprocessed", img_preprocessed)
 cv.imshow("Image edges", img_rgb)
+
+# end runtime measurement and print result
+executionTime = (time.time() - startTime)
+print("main: " + str(executionTime))
+
 cv.waitKey(0)
 cv.destroyAllWindows()

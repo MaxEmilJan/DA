@@ -1,8 +1,8 @@
-#import cv2 as cv
 import numpy as np
-# from matplotlib import pyplot as plt
+import time
 
 def vignetting_correction(img_vignett, correction_mask):
+    startTime = time.time()
     # get the size of the image (1920x1200 in this application)
     height, width = img_vignett.shape
     # vignetting-correction by deviding the vignetted image by the correction mask
@@ -14,6 +14,7 @@ def vignetting_correction(img_vignett, correction_mask):
                 img_corrected[i,j] = 255
             else:
                 pass
+    print("vignetting_correction: " + str(time.time()-startTime))
     # return the corrected image without vignetting
     return np.uint8(img_corrected)
 
