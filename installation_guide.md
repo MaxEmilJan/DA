@@ -13,30 +13,69 @@ After the OS is running and an user was added, you can start to install the requ
 > sudo python3 get-pip.py
 > rm get-pip.py
 
-4. install virtualenv
-> sudo pip install virtualenv
+4. install the Baumer NeoAPI to your environment by following the official installation guide
 
-5. create virtual environment with python 3.6 (will be created in the current working directory)
-> virtualenv -p 3.6 "<name_of_your_env>"
+5. install numpy (version 1.19.4)
+> pip3 install numpy==1.19.4
 
-6. activate the environment
-> source <path_to_your_environment>/bin/activate
+6. install opencv dependencies
+> dependencies=(build-essential
+              cmake
+              pkg-config
+              libavcodec-dev
+              libavformat-dev
+              libswscale-dev
+              libv4l-dev
+              libxvidcore-dev
+              libavresample-dev
+              python3-dev
+              libtbb2
+              libtbb-dev
+              libtiff-dev
+              libjpeg-dev
+              libpng-dev
+              libtiff-dev
+              libdc1394-22-dev
+              libgtk-3-dev
+              libcanberra-gtk3-module
+              libatlas-base-dev
+              gfortran
+              wget
+              unzip)
+> sudo apt install -y ${dependencies[@]}
 
-7. install the Baumer NeoAPI to your environment by following the official installation guide
+8. download opencv 
+> wget https://github.com/opencv/opencv/archive/4.5.2.zip -O opencv-4.5.2.zip
+> wget https://github.com/opencv/opencv_contrib/archive/4.5.2.zip -O opencv_contrib-4.5.2.zip
+> unzip opencv-4.5.2.zip
+> unzip opencv_contrib-4.5.2.zip
+> mkdir opencv-4.5.2/build
+> cd opencv-4.5.2/build
 
-8. install numpy to your environment (version 1.19.4)
-> pip install numpy==1.19.4
+9. configure the building setting as follows
+> cmake -D CMAKE_BUILD_TYPE=RELEASE \
+      -D WITH_CUDA=ON \
+      -D CUDA_ARCH_PTX="" \
+      -D CUDA_ARCH_BIN="5.3,6.2,7.2" \
+      -D WITH_CUBLAS=ON \
+      -D WITH_LIBV4L=ON \
+      -D BUILD_opencv_python3=ON \
+      -D BUILD_opencv_python2=OFF \
+      -D BUILD_opencv_java=OFF \
+      -D WITH_GSTREAMER=OFF \
+      -D WITH_GTK=ON \
+      -D BUILD_TESTS=OFF \
+      -D BUILD_PERF_TESTS=OFF \
+      -D BUILD_EXAMPLES=OFF \
+      -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-4.5.2/modules \
+      ..
 
-9. install opencv to your environment
+10. build opencv with CUDA support (can take some hours)
+> make -j4
+> sudo make install
+
+11. install pytasseract
 > ____
 
-10. install pytasseract to your environment
-> ____
-
-11. install smbus outside your environment
-> deactivate
+12. install smbus
 > sudo apt-get install python3-smbus
-
-12. uninstall preinstalled systemwide numpy 1.13
-> sudo pip uninstall numpy
-
