@@ -3,6 +3,7 @@ After the OS is running and an user was added, you can start to install the requ
 
 1. remove libreoffice, since it consumes a lot of memory and is not needed for this application.
 > sudo apt-get purge libreoffice*
+
 > sudo apt-get clean
 
 2. update and upgrade the system (may take about 10 minutes)
@@ -10,7 +11,9 @@ After the OS is running and an user was added, you can start to install the requ
 
 3. install the newest version of pip
 > wget https://bootstrap.pypa.io/get-pip.py
+
 > sudo python3 get-pip.py
+
 > rm get-pip.py
 
 4. install the Baumer NeoAPI to your environment by following the official installation guide
@@ -42,14 +45,20 @@ After the OS is running and an user was added, you can start to install the requ
               gfortran
               wget
               unzip)
+
 > sudo apt install -y ${dependencies[@]}
 
 8. download opencv 
 > wget https://github.com/opencv/opencv/archive/4.5.2.zip -O opencv-4.5.2.zip
+
 > wget https://github.com/opencv/opencv_contrib/archive/4.5.2.zip -O opencv_contrib-4.5.2.zip
+
 > unzip opencv-4.5.2.zip
+
 > unzip opencv_contrib-4.5.2.zip
+
 > mkdir opencv-4.5.2/build
+
 > cd opencv-4.5.2/build
 
 9. configure the building setting as follows
@@ -72,6 +81,7 @@ After the OS is running and an user was added, you can start to install the requ
 
 10. build opencv with CUDA support (can take some hours)
 > make -j4
+
 > sudo make install
 
 11. install pytasseract
