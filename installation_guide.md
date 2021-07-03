@@ -84,8 +84,8 @@ After the OS is running and an user was added, you can start to install the requ
 
 > sudo make install
 
-11. install pytasseract
-> ____
+11. install pytesseract
+> pip3 install pytesseract --user
 
 12. install smbus
 > sudo apt-get install python3-smbus
