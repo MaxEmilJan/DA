@@ -2,7 +2,6 @@ import cv2 as cv
 import pytesseract
 import re
 import time
-#from edge_detection import canny_edge_detection
 # definde the PATH to your tesseract sidepackage
 pytesseract.pytesseract.tesseract_cmd = r'/home/max/anaconda3/envs/DA/bin/tesseract'
 
@@ -47,5 +46,4 @@ def text_recognition(text_img, img_roi, square):
     #cv.imshow("ROI thresh", img_roi_thresh)
     #cv.waitKey(0)
     #cv.destroyAllWindows()
-    print("text_recognition: " + str(time.time()-startTime))
     return text_img, match

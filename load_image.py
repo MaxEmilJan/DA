@@ -11,5 +11,5 @@ def load_image(name_image):
     print("load_image: " + str(time.time()-startTime))
     return img_cut
 
-#img, height, width = load_image("images/Streifen_2,8/3ms_2,8_1.jpg")
+#img = load_image("images/Dataset_Stripe/1,5ms_k2_7.jpg")
 #cv.imwrite("test_roi.jpg", img)

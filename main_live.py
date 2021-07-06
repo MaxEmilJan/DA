@@ -41,7 +41,7 @@ while camera.IsConnected():
     # cut the edges and grayscale
     img = load_image(img_raw)
     # call the function to remove the vignetting
-    img_corrected = vignetting_correction(img, vignett_mask)
+    img_corrected = np.uint8(vignetting_correction(img, vignett_mask))
     # call the function to preprocess the image
     img_preprocessed = preprocessing(img_corrected)
     # call the function to detect edges
@@ -73,6 +73,7 @@ while camera.IsConnected():
     # if a text which matches the pattern was recognized:
     if text != "":
         # draw green box
+        box = np.array(box)
         cv.drawContours(img_rgb,[box],0,(0,255,0),2)
         # put recognized text in top left corner
         cv.putText(img_rgb, text, (25, 100), cv.FONT_HERSHEY_SIMPLEX, 3, (0,255,0))

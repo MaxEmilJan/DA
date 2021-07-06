@@ -1,8 +1,8 @@
-import numpy as np
-import time
+from numba import jit
 
+# use a just-in-time compilation to speed up the pixelwise for loops
+@jit(nopython=True)
 def vignetting_correction(img_vignett, correction_mask):
-    startTime = time.time()
     # get the size of the image (1920x1200 in this application)
     height, width = img_vignett.shape
     # vignetting-correction by deviding the vignetted image by the correction mask
@@ -14,9 +14,8 @@ def vignetting_correction(img_vignett, correction_mask):
                 img_corrected[i,j] = 255
             else:
                 pass
-    print("vignetting_correction: " + str(time.time()-startTime))
     # return the corrected image without vignetting
-    return np.uint8(img_corrected)
+    return img_corrected
 
 #vignett_mask = np.load("vignetting_correction_mask.npy")
 #img_roi = cv.imread("test_roi.jpg")[...,0]

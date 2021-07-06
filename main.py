@@ -14,7 +14,7 @@ from OCR.orientation_correction import orientation_correction
     # t = 1,5ms
 
 # select a test image (1 to 38)
-number_image = "8"
+number_image = "7"
 name_img = "images/Dataset_Stripe/1,5ms_k2_" + number_image + ".jpg"
 
 # load vignetting_correction_mask.npy to work with this array
@@ -31,7 +31,7 @@ startTime = time.time()
 # call the function to load the image
 img = load_image(name_img)
 # call the function to remove the vignetting
-img_corrected = vignetting_correction(img, vignett_mask)
+img_corrected = np.uint8(vignetting_correction(img, vignett_mask))
 img_rgb = cv.cvtColor(img_corrected, cv.COLOR_GRAY2RGB)
 # call the function to preprocess the image
 img_preprocessed = preprocessing(img_corrected)
@@ -65,15 +65,15 @@ for i in contours:
 print(text)
 print("Done")
 
-cv.imwrite("output_"+number_image+".jpg", img_rgb)
+#cv.imwrite("output_"+number_image+".jpg", img_rgb)
 #cv.imshow("Image", img)
 #cv.imshow("Image corrected", img_corrected)
 #cv.imshow("img_preprocessed", img_preprocessed)
-cv.imshow("Image edges", img_rgb)
+#cv.imshow("Image edges", img_rgb)
 
 # end runtime measurement and print result
 executionTime = (time.time() - startTime)
 print("main: " + str(executionTime))
 
-cv.waitKey(0)
-cv.destroyAllWindows()
+#cv.waitKey(0)
+#cv.destroyAllWindows()
