@@ -89,3 +89,33 @@ After the OS is running and an user was added, you can start to install the requ
 
 12. install smbus
 > sudo apt-get install python3-smbus
+
+13. install numba dependencies
+> wget http://releases.llvm.org/7.0.1/llvm-7.0.1.src.tar.xz
+
+> tar -xvf llvm-7.0.1.src.tar.xz
+
+> cd llvm-7.0.1.src
+
+> mkdir llvm_build_dir
+
+> cd llvm_build_dir/
+
+> cmake ../ -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD="ARM;X86;AArch64"
+
+> make -j4
+
+> sudo make install
+
+> cd bin/
+
+> echo "export LLVM_CONFIG=\""`pwd`"/llvm-config\"" >> ~/.bashrc
+
+> echo "alias llvm='"`pwd`"/llvm-lit'" >> ~/.bashrc
+
+> source ~/.bashrc
+
+> pip install llvmlite==0.30.0
+
+14. install numba
+> pip install numba==0.46.0
