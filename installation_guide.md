@@ -2,17 +2,20 @@ To setup the NVIDIA Jetson Nano for this particular usecase, follow the "Getting
 After the OS is running and an user was added, you can start to install the required packages.
 
 1. remove libreoffice, since it consumes a lot of memory and is not needed for this application.
-    sudo apt-get purge libreoffice*
-    sudo apt-get clean
-
+~~~
+sudo apt-get purge libreoffice*
+sudo apt-get clean
+~~~
 2. update and upgrade the system (may take about 10 minutes)
-    sudo apt-get update && sudo apt-get upgrade
-
+~~~
+sudo apt-get update && sudo apt-get upgrade
+~~~
 3. install the newest version of pip
-    wget https://bootstrap.pypa.io/get-pip.py
-    sudo python3 get-pip.py
-    rm get-pip.py
-
+~~~
+wget https://bootstrap.pypa.io/get-pip.py
+sudo python3 get-pip.py
+rm get-pip.py
+~~~
 4. install virtualenv and virtualenvwrapper
     sudo pip install virtualenv virtualenvwrapper
 
