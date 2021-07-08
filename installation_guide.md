@@ -17,19 +17,23 @@ sudo python3 get-pip.py
 rm get-pip.py
 ~~~
 4. install virtualenv and virtualenvwrapper
-    sudo pip install virtualenv virtualenvwrapper
-
+~~~
+sudo pip install virtualenv virtualenvwrapper
+~~~
 5. create and activate a virtualenv with python 3.6
-    mkvirtualenv <name_of_your_env> -p3.6
-    workon <name_of_your_env>
-
+~~~
+mkvirtualenv <name_of_your_env> -p3.6
+workon <name_of_your_env>
+~~~
 6. install the Baumer NeoAPI to your environment by following the official installation guide
 
 7. install numpy (version 1.19.4) while in your env
-> pip install numpy==1.19.4
-
+~~~
+pip install numpy==1.19.4
+~~~
 8. install opencv dependencies
-> dependencies=(build-essential
+~~~
+dependencies=(build-essential
               cmake
               pkg-config
               libavcodec-dev
@@ -53,21 +57,22 @@ rm get-pip.py
               wget
               unzip)
 
-> sudo apt install -y ${dependencies[@]}
-
+sudo apt install -y ${dependencies[@]}
+~~~
 9. download opencv 
-> wget https://github.com/opencv/opencv/archive/4.5.2.zip -O opencv-4.5.2.zip
+~~~
+wget https://github.com/opencv/opencv/archive/4.5.2.zip -O opencv-4.5.2.zip
 
-> wget https://github.com/opencv/opencv_contrib/archive/4.5.2.zip -O opencv_contrib-4.5.2.zip
+wget https://github.com/opencv/opencv_contrib/archive/4.5.2.zip -O opencv_contrib-4.5.2.zip
 
-> unzip opencv-4.5.2.zip
+unzip opencv-4.5.2.zip
 
-> unzip opencv_contrib-4.5.2.zip
+unzip opencv_contrib-4.5.2.zip
 
-> mkdir opencv-4.5.2/build
+mkdir opencv-4.5.2/build
 
-> cd opencv-4.5.2/build
-
+cd opencv-4.5.2/build
+~~~
 10. configure the building setting as follows
 > cmake -D CMAKE_BUILD_TYPE=RELEASE \
       -D WITH_CUDA=ON \
