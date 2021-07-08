@@ -16,12 +16,19 @@ After the OS is running and an user was added, you can start to install the requ
 
 > rm get-pip.py
 
-4. install the Baumer NeoAPI to your environment by following the official installation guide
+4. install virtualenv and virtualenvwrapper
+> sudo pip install virtualenv virtualenvwrapper
 
-5. install numpy (version 1.19.4)
-> pip3 install numpy==1.19.4
+5. create and activate a virtualenv with python 3.6
+> mkvirtualenv <name_of_your_env> -p3.6
+> workon <name_of_your_env>
 
-6. install opencv dependencies
+6. install the Baumer NeoAPI to your environment by following the official installation guide
+
+7. install numpy (version 1.19.4) while in your env
+> pip install numpy==1.19.4
+
+8. install opencv dependencies
 > dependencies=(build-essential
               cmake
               pkg-config
@@ -48,7 +55,7 @@ After the OS is running and an user was added, you can start to install the requ
 
 > sudo apt install -y ${dependencies[@]}
 
-8. download opencv 
+9. download opencv 
 > wget https://github.com/opencv/opencv/archive/4.5.2.zip -O opencv-4.5.2.zip
 
 > wget https://github.com/opencv/opencv_contrib/archive/4.5.2.zip -O opencv_contrib-4.5.2.zip
@@ -61,7 +68,7 @@ After the OS is running and an user was added, you can start to install the requ
 
 > cd opencv-4.5.2/build
 
-9. configure the building setting as follows
+10. configure the building setting as follows
 > cmake -D CMAKE_BUILD_TYPE=RELEASE \
       -D WITH_CUDA=ON \
       -D CUDA_ARCH_PTX="" \
@@ -79,18 +86,18 @@ After the OS is running and an user was added, you can start to install the requ
       -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-4.5.2/modules \
       ..
 
-10. build opencv with CUDA support (can take some hours)
+11. build opencv with CUDA support (can take some hours)
 > make -j4
 
 > sudo make install
 
-11. install pytesseract
-> pip3 install pytesseract --user
+12. install pytesseract
+> pip install pytesseract --user
 
-12. install smbus
+13. install smbus
 > sudo apt-get install python3-smbus
 
-13. install numba dependencies
+14. install numba dependencies
 > wget http://releases.llvm.org/7.0.1/llvm-7.0.1.src.tar.xz
 
 > tar -xvf llvm-7.0.1.src.tar.xz
@@ -117,5 +124,5 @@ After the OS is running and an user was added, you can start to install the requ
 
 > pip install llvmlite==0.30.0
 
-14. install numba
+15. install numba
 > pip install numba==0.46.0
