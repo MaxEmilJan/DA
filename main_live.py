@@ -1,12 +1,13 @@
 import neoapi
 import numpy as np
 import cv2 as cv
-from load_image_live import load_image
+from load_frame import load_frame
 from OCR.vignetting_correction.vignetting_correction import vignetting_correction
 from OCR.preprocessing import preprocessing
 from OCR.edge_detection import canny_edge_detection
 from OCR.text_recognition import text_recognition
 from OCR.orientation_correction import orientation_correction
+import time
 
 # used camera parameters:
     # f = 5,5cm
@@ -35,17 +36,19 @@ camera.f.AcquisitionFrameRate.value = 10
 # start recording routine
 cv.namedWindow("frame", cv.WINDOW_NORMAL)
 while camera.IsConnected():
+    #startRun1 = time.time()
     # create a string to write the recognized text to
     text = ""
     img_raw = camera.GetImage().GetNPArray()
     # cut the edges and grayscale
-    img = load_image(img_raw)
+    img = load_frame(img_raw)
     # call the function to remove the vignetting
     img_corrected = np.uint8(vignetting_correction(img, vignett_mask))
     # call the function to preprocess the image
     img_preprocessed = preprocessing(img_corrected)
     # call the function to detect edges
     img_edges, flag_contours = canny_edge_detection(img_preprocessed, filter_close, filter_dil)
+    #print("part 1: " + str(time.time()-startRun1))
     if flag_contours == True:
         # find contours
         contours, _ = cv.findContours(img_edges, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
@@ -78,7 +81,7 @@ while camera.IsConnected():
         # put recognized text in top left corner
         cv.putText(img_rgb, text, (25, 100), cv.FONT_HERSHEY_SIMPLEX, 3, (0,255,0))
         cv.imshow("frame", img_rgb)
-        #print(text)
+        print(text)
     # if no matching text was recognized:
     else:
         # put spareholder in top left corner
