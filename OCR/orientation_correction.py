@@ -1,9 +1,7 @@
 import cv2 as cv
 import numpy as np
-import time
 
 def orientation_correction(cnt, img_copy):
-    startTime = time.time()
     # get center point, width, length and rotation angle of minimal box around contour
     roi = cv.minAreaRect(cnt)
     # get coordinates of corners (P0, P1, P2, P3)
@@ -39,5 +37,4 @@ def orientation_correction(cnt, img_copy):
         # multiply img-matix with rotation-matrix to obtain corrected image
         img_rot = cv.warpPerspective(img_copy, M, (width, height))
         square = True
-    print("orientation_correction: " + str(time.time()-startTime))
     return img_rot, square, box

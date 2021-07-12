@@ -4,7 +4,6 @@ import time
 
 # function to detect closed edges in the image by applying the canny edge detection methode
 def canny_edge_detection(img_preprocessed, filter_close, filter_dil):
-    startTime = time.time()
     # basic canny edge detection
     img_preprocessed = np.uint8(img_preprocessed)
     img_canny = cv.Canny(img_preprocessed, 150, 200, apertureSize=3, L2gradient=True)
@@ -61,15 +60,15 @@ def canny_edge_detection(img_preprocessed, filter_close, filter_dil):
         #cv.imshow("closed", img_close_1)
         #cv.imshow("filtered", img_cnt_delete)
         #cv.imshow("flooded", img_fill_inv)
-        #cv.imshow("boxes", img_close_2)
         #cv.waitKey(0)
         #cv.destroyAllWindows()
     else:
         cnt_detected = False
         img_dil = None
-    print("edge_detection: " + str(time.time()-startTime))
     return img_dil, cnt_detected
 
-#img_blur = cv.imread("vignetting_correction/test_blur.jpg")[...,0]
-#img_edge, contours, hierarchy, roi_candidate = canny_edge_detection(img_blur)
-#cv.imwrite("vignetting_correction/test_edge.jpg", img_edge)
+#filter_close = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
+#filter_dil = cv.getStructuringElement(cv.MORPH_RECT, (51,51))
+#img_blur = cv.imread("1,5ms_k2_7.jpg")[...,0]
+#img_edge, contours = canny_edge_detection(img_blur, filter_close, filter_dil)
+#cv.imwrite("test_edge.jpg", img_edge)
