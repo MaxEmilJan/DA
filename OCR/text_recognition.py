@@ -10,9 +10,7 @@ def text_recognition(text_img, img_roi, square, custom_config):
     # apply thresholding to the ROI
     _, img_roi_thresh = cv.threshold(img_roi, 100, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
     # extract the text which is visible in the ROI
-    startTime = time.time()
     text_roi = pytesseract.image_to_string(img_roi_thresh, config=custom_config)
-    print(time.time()-startTime)
     # add the text to a string if it contains a "#" symbol followed by 4 digits
     text_digit = re.search(r"#(\d{4})", text_roi)
     if text_digit is not None:
