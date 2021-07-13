@@ -2,7 +2,6 @@ import sys
 import time
 import argparse
 import logging
-#logging.basicConfig(level=logging.WARNING, format='%(levelname)s: \nFile: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
 import numpy as np
 import cv2 as cv
 import neoapi
@@ -140,9 +139,9 @@ def main():
                     # filter all found contours which are too small to contain characters
                     if area >= 25000:
                         # deskew ROI
-                        img_roi, square, box = orientation_correction(i, img_corrected)
+                        img_roi, box = orientation_correction(i, img_corrected)
                         # text recognition in ROI
-                        text, match = text_recognition(text, img_roi, square, OCR_config)
+                        text, match = text_recognition(text, img_roi, OCR_config)
                         # draw a box and the detected text to the original image, if a match was found
                         if match == True:
                             box = np.int0(box)
