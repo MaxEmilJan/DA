@@ -2,7 +2,7 @@ import sys
 import time
 import argparse
 import logging
-logging.basicConfig(level=logging.WARNING, format='%(levelname)s: \nFile: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
+#logging.basicConfig(level=logging.WARNING, format='%(levelname)s: \nFile: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
 import numpy as np
 import cv2 as cv
 import neoapi
@@ -22,9 +22,15 @@ from OCR.orientation_correction import orientation_correction
 def main():
     # command line inputs
     parser = argparse.ArgumentParser(description="Detect the label on a camera.")
-    parser.add_argument("mode", choices=["video", "image"], help="select either video or image mode whether you want to detect text in a live recording or an image", type=str)
-    parser.add_argument("-n", "--number_image", choices=range(1,39), help="number of image which will be used in image mode", type=int, default=1)
+    parser.add_argument("mode", choices=["video", "image"], type=str, help="select either video or image mode whether you want to detect text in a live recording or an image")
+    parser.add_argument("-n", "--number_image", choices=range(1,39), type=int, default=1, metavar="[1-38]", help="number of image which will be used in image mode")
+    parser.add_argument("-l", "--logging", action="store_true", help="set this flag to get additional logging informations printed (algorithm will get slower)")
     args = parser.parse_args()
+    
+    if args.logging == True:
+        logging.basicConfig(level=logging.INFO, format='%(levelname)s: \nFile: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
+    else:
+        logging.basicConfig(level=logging.WARNING, format='%(levelname)s: \nFile: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
     
     startTime = time.time()
     try:
