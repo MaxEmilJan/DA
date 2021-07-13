@@ -2,7 +2,7 @@ import sys
 import time
 import argparse
 import logging
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: Line %(lineno)d \nMessage: %(message)s')
+logging.basicConfig(level=logging.WARNING, format='%(levelname)s: \nFile: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
 import numpy as np
 import cv2 as cv
 import neoapi
@@ -26,6 +26,7 @@ def main():
     parser.add_argument("-n", "--number_image", choices=range(1,39), help="number of image which will be used in image mode", type=int, default=1)
     args = parser.parse_args()
     
+    startTime = time.time()
     try:
         logging.info("init...")
         # load vignetting_correction_mask.npy to work with this array
@@ -43,39 +44,20 @@ def main():
         sys.exit(1)
     
     if args.mode == "image":
-        try:
-            # get number of image as command line input
-            number_image = str(args.number_image)
-            name_img = "images/Dataset_Stripe/1,5ms_k2_" + number_image + ".jpg"
-            # call the function to load the image
-            img = load_image(name_img)
-            # print debug info:
-            logging.info("Image loaded")
-        except Exception as e:
-            logging.error(e)
-            sys.exit(1)
-        
-        try:
-            # call the function to remove the vignetting
-            img_corrected = np.uint8(vignetting_correction(img, vignett_mask))
-            img_rgb = cv.cvtColor(img_corrected, cv.COLOR_GRAY2RGB)
-            # print debug info:
-            logging.info("vignetting correction done")
-        except Exception as e:
-            logging.error(e)
-            sys.exit(1)
-        
-        try:
-            # call the function to preprocess the image
-            img_preprocessed = preprocessing(img_corrected)
-            # call the function to detect edges
-            img_edges, _ = canny_edge_detection(img_preprocessed, filter_close, filter_dil)
-            logging.info("edge detection done")
-        except Exception as e:
-            logging.error(e)
-            sys.exit(1)
-        
-        try:
+        # get number of image as command line input
+        number_image = str(args.number_image)
+        name_img = "images/Dataset_Stripe/1,5ms_k2_" + number_image + ".jpg"
+        # call the function to load the image
+        img = load_image(name_img)
+        # call the function to remove the vignetting
+        img_corrected = np.uint8(vignetting_correction(img, vignett_mask))
+        img_rgb = cv.cvtColor(img_corrected, cv.COLOR_GRAY2RGB)
+        # print debug info:
+        # call the function to preprocess the image
+        img_preprocessed = preprocessing(img_corrected)
+        # call the function to detect edges
+        img_edges, flag_contours = canny_edge_detection(img_preprocessed, filter_close, filter_dil)
+        if flag_contours == True:
             # find contours
             contours, _ = cv.findContours(img_edges, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
             # loop through all the detected edges
@@ -85,9 +67,9 @@ def main():
                 # filter all found contours which are too small to contain characters
                 if area >= 25000:
                     # deskew ROI
-                    img_roi, square, box = orientation_correction(i, img_corrected)
+                    img_roi, box = orientation_correction(i, img_corrected)
                     # text recognition in ROI
-                    text, match = text_recognition(text, img_roi, square, OCR_config)
+                    text, match = text_recognition(text, img_roi, OCR_config)
                     # draw a box and the detected text to the original image, if a match was found
                     if match == True:
                         box = np.int0(box)
@@ -99,29 +81,35 @@ def main():
                         pass
                 else:
                     pass
-            logging.info("text recognition done")
-        except Exception as e:
-            logging.error(e)
-            sys.exit(1)
-        
+        else:
+            pass
+        logging.info("text recognition done")
         # print the recognized text
-        print(text)
+        logging.warning("recognized text: " + text)
+        logging.warning("Runtime: " + str(round(time.time()-startTime, 4)) + "s")
         cv.imshow("press ESC to close", img_rgb)
         cv.waitKey(0)
         cv.destroyAllWindows()
     
     elif args.mode == "video":
-        # init camera
-        camera = neoapi.Cam()
-        camera.Connect()
-        # a mono cam is used so it is enough to only load a mono channel image
-        camera.f.PixelFormat.SetString('Mono8')
-        # exposure time set to 1,5 ms
-        camera.f.ExposureTime.Set(15000)
-        # framerate set to max. 10 FPS
-        camera.f.AcquisitionFrameRateEnable.value = True
-        camera.f.AcquisitionFrameRate.value = 10
-        # start recording routine
+        try:
+            logging.info("init camera ...")
+            # init camera
+            camera = neoapi.Cam()
+            camera.Connect()
+            # a mono cam is used so it is enough to only load a mono channel image
+            camera.f.PixelFormat.SetString('Mono8')
+            # exposure time set to 1,5 ms
+            camera.f.ExposureTime.Set(15000)
+            # framerate set to max. 10 FPS
+            camera.f.AcquisitionFrameRateEnable.value = True
+            camera.f.AcquisitionFrameRate.value = 10
+            logging.info("init camera done")
+        except Exception as e:
+            logging.error(e)
+            sys.exit(1)
+        
+        #start recording routine
         cv.namedWindow("press ESC to close", cv.WINDOW_NORMAL)
         while camera.IsConnected():
             #startRun1 = time.time()
@@ -158,6 +146,11 @@ def main():
                         pass
             else:
                 pass
+            logging.info("text recognition done")
+            # print the recognized text
+            logging.warning("recognized text: " + text)
+            logging.warning("Runtime: " + str(round(time.time()-startTime, 4)) + "s")
+            
             # print the result
             img_rgb = cv.cvtColor(img_corrected, cv.COLOR_GRAY2RGB)
             # if a text which matches the pattern was recognized:
