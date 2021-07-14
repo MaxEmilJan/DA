@@ -10,8 +10,10 @@ from load_frame import load_frame
 from OCR.vignetting_correction.vignetting_correction import vignetting_correction
 from OCR.preprocessing import preprocessing
 from OCR.edge_detection import canny_edge_detection
-from OCR.text_recognition import text_recognition
 from OCR.orientation_correction import orientation_correction
+from OCR.binning import binning
+from OCR.text_recognition import text_recognition
+
 
 # used camera parameters:
     # f = 5cm
@@ -73,8 +75,10 @@ def main():
                 if area >= 25000:
                     # deskew ROI
                     img_roi, box = orientation_correction(i, img_corrected)
+                    # 2x2 binning the ROI to speed up the OCR
+                    img_roi_bin = np.uint8(binning(img_roi, ((img_roi.shape[0]//2), (img_roi.shape[1]//2))))
                     # text recognition in ROI
-                    text, match = text_recognition(text, img_roi, OCR_config)
+                    text, match = text_recognition(text, img_roi_bin, OCR_config)
                     # draw a box and the detected text to the original image, if a match was found
                     if match == True:
                         box = np.int0(box)
@@ -140,8 +144,10 @@ def main():
                     if area >= 25000:
                         # deskew ROI
                         img_roi, box = orientation_correction(i, img_corrected)
+                        # 2x2 binning the ROI to speed up the OCR
+                        img_roi_bin = np.uint8(binning(img_roi, ((img_roi.shape[0]//2), (img_roi.shape[1]//2))))
                         # text recognition in ROI
-                        text, match = text_recognition(text, img_roi, OCR_config)
+                        text, match = text_recognition(text, img_roi_bin, OCR_config)
                         # draw a box and the detected text to the original image, if a match was found
                         if match == True:
                             box = np.int0(box)
