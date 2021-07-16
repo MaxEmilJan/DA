@@ -5,6 +5,7 @@ import logging
 import numpy as np
 import cv2 as cv
 import neoapi
+import easyocr
 from load_image import load_image
 from load_frame import load_frame
 from OCR.vignetting_correction.vignetting_correction import vignetting_correction
@@ -13,6 +14,7 @@ from OCR.edge_detection import canny_edge_detection
 from OCR.orientation_correction import orientation_correction
 from OCR.binning import binning
 from OCR.text_recognition import text_recognition
+from OCR.text_recognition_easyocr import text_recognition_gpu
 
 
 # used camera parameters:
@@ -43,6 +45,8 @@ def main():
         filter_dil = cv.getStructuringElement(cv.MORPH_RECT, (51,51))
         # define OCR config
         OCR_config = r'-c tessedit_char_whitelist=#1234567890 --psm 6'
+        # define easyocr reader module
+        reader = easyocr.Reader(['en'], gpu=True)
         # create a string to write the recognized text to
         text = ""
         logging.info("init done")
@@ -77,8 +81,10 @@ def main():
                     img_roi, box = orientation_correction(i, img_corrected)
                     # 2x2 binning the ROI to speed up the OCR
                     img_roi_bin = np.uint8(binning(img_roi, ((img_roi.shape[0]//2), (img_roi.shape[1]//2))))
-                    # text recognition in ROI
-                    text, match = text_recognition(text, img_roi_bin, OCR_config)
+                    # text recognition in ROI (pytesseract)
+                    #text, match = text_recognition(text, img_roi_bin, OCR_config)
+                    # text recognition in ROI (easyocr)
+                    text, match = text_recognition_gpu(text, img_roi, reader)
                     # draw a box and the detected text to the original image, if a match was found
                     if match == True:
                         box = np.int0(box)
