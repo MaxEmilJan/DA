@@ -5,9 +5,7 @@ from numba import jit
 # use a just-in-time compilation to speed up the binning
 jit(nopython=True)
 def binning(array, new_shape):
-    print(array.shape)
     array = array[:(array.shape[0] // 2)*2, :(array.shape[1] // 2)*2]
-    print(array.shape)
     shape = (new_shape[0], array.shape[0] // new_shape[0],
              new_shape[1], array.shape[1] // new_shape[1])
     return array.reshape(shape).mean(-1).mean(1)
