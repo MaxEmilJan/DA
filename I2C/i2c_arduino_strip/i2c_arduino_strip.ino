@@ -57,7 +57,3 @@ void loop()
 //    }
 //  }
 }
-
-void sendData(){
-    Wire.write(ledState);
-}
