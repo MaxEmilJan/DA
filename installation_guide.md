@@ -82,8 +82,9 @@ pip install llvmlite==0.30.0
 pip install numba==0.46.0
 ~~~
 
+
 Furthermore the following packages might be usefull for things like debugging:
-1. Baumer CameraExplorer (install by following the official guide)
-2. nano
+* Baumer CameraExplorer (install by following the official guide)
+* nano
 ~~~
 sudo apt-get install nano
