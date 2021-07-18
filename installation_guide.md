@@ -41,6 +41,7 @@ wget https://nvidia.box.com/shared/static/p57jwntv436lfrd78inwl7iml6p13fzh.whl -
 sudo apt-get install python3-pip libopenblas-base libopenmpi-dev 
 pip install Cython
 pip install numpy torch-1.8.0-cp36-cp36m-linux_aarch64.whl
+rm torch-1.8.0-cp36-cp36m-linux_aarch64.whl
 ~~~
 8. Since the previous step also installed numpy 1.19.5 we have to remove it and replace it with numpy 1.19.4 (1.19.5 does not work in a virtual env)
 ~~~
@@ -63,6 +64,7 @@ pip install smbus
 ~~~
 wget http://releases.llvm.org/7.0.1/llvm-7.0.1.src.tar.xz
 tar -xvf llvm-7.0.1.src.tar.xz
+rm llvm-7.0.1.src.tar.xz
 cd llvm-7.0.1.src
 mkdir llvm_build_dir
 cd llvm_build_dir/
