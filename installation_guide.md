@@ -27,8 +27,9 @@ workon <name_of_your_env>
 ~~~
 6. install the Baumer NeoAPI to your environment by following the official installation guide
 
-7. install numpy (version 1.19.4) while in your env
+7. uninstall existing numpy version and install numpy version 1.19.4 while in your env
 ~~~
+sudo apt remove python-numpy
 pip install numpy==1.19.4
 ~~~
 8. install opencv dependencies
