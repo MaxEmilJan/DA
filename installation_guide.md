@@ -83,7 +83,7 @@ pip install numba==0.46.0
 ~~~
 
 Furthermore the following packages might be usefull for things like debugging:
-* Baumer CameraExplorer (install by following the official guide)
+* Baumer CameraExplorer (installed by following the official guide)
 * nano
 ~~~
 sudo apt-get install nano
