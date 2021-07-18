@@ -1,12 +1,12 @@
 To setup the NVIDIA Jetson Nano for this particular usecase, follow the "Getting Started" introduction by NVIDIA.
 After the OS is running and an user was added, you can start to install the required packages.
 The following packages and their dependencies are needed:
--neoAPI
--numpy
--opencv
--numba
--easyocr, pytesseract
--smbus
+*-neoAPI
+*-numpy
+*-opencv
+*-numba
+*-easyocr, pytesseract
+*-smbus
 
 1. remove libreoffice, since it consumes a lot of memory and is not needed for this application.
 ~~~
