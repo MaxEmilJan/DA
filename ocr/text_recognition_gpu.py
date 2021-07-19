@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 # function to evaluate the detected edges and areas
 def text_recognition_gpu(text_img, img_roi, reader):
-    #try:
+    try:
         # apply thresholding to the ROI
         _, img_roi_thresh = cv.threshold(img_roi, 100, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
         # extract the text which is visible in the ROI
@@ -42,7 +42,7 @@ def text_recognition_gpu(text_img, img_roi, reader):
         #cv.imshow("ROI thresh", img_roi_thresh)
         #cv.waitKey(0)
         #cv.destroyAllWindows()
-    #except Exception as e:
-    #    logger.error(e)
-    #    sys.exit(1)
-        return text_img, match
+    except Exception as e:
+        logger.error(e)
+        sys.exit(1)
+    return text_img, match

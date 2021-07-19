@@ -8,13 +8,12 @@ import neoapi
 import easyocr
 from load_image import load_image
 from load_frame import load_frame
-from OCR.vignetting_correction.vignetting_correction import vignetting_correction
-from OCR.preprocessing import preprocessing
-from OCR.edge_detection import canny_edge_detection
-from OCR.orientation_correction import orientation_correction
-from OCR.binning import binning
-from OCR.text_recognition import text_recognition
-from OCR.text_recognition_easyocr import text_recognition_gpu
+from vignetting_correction.vignetting_correction import vignetting_correction
+from ocr.preprocessing import preprocessing
+from ocr.edge_detection import canny_edge_detection
+from ocr.orientation_correction import orientation_correction
+#from ocr.binning import binning
+from ocr.text_recognition_gpu import text_recognition_gpu
 
 
 # used camera parameters:
@@ -26,38 +25,39 @@ def main():
     # command line inputs
     parser = argparse.ArgumentParser(description="Detect the label on a camera.")
     parser.add_argument("mode", choices=["video", "image"], type=str, help="select either video or image mode whether you want to detect text in a live recording or an image")
-    parser.add_argument("-n", "--number_image", choices=range(1,39), type=int, default=1, metavar="[1-38]", help="number of image which will be used in image mode")
+    parser.add_argument("-n", "--number_image", choices=range(1,39), type=int, default=1, metavar="[1-38]", help="number of image which will be used in image mode") 
+    #parser.add_argument("-f", "--file", help="add the path to the image you want to perform text recognition on")
     parser.add_argument("-l", "--logging", action="store_true", help="set this flag to get additional logging informations printed (algorithm will get slower)")
     args = parser.parse_args()
     
     if args.logging == True:
-        logging.basicConfig(level=logging.INFO, format='%(levelname)s: \nFile: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
+        logging.basicConfig(level=logging.INFO, format='File: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
     else:
-        logging.basicConfig(level=logging.WARNING, format='%(levelname)s: \nFile: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
+        logging.basicConfig(level=logging.WARNING, format='File: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
     
-    startTime = time.time()
     try:
-        logging.info("init...")
+        logging.warning("init...")
         # load vignetting_correction_mask.npy to work with this array
-        vignett_mask = np.load("OCR/vignetting_correction/vignetting_correction_mask.npy")
+        vignett_mask = np.load("vignetting_correction/vignetting_correction_mask.npy")
         # create the necessary filters for morphologic operations
-        filter_close = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
+        filter_close = cv.getStructuringElement(cv.MORPH_RECT, (4,4))
         filter_dil = cv.getStructuringElement(cv.MORPH_RECT, (51,51))
-        # define OCR config
-        OCR_config = r'-c tessedit_char_whitelist=#1234567890 --psm 6'
         # define easyocr reader module
-        reader = easyocr.Reader(['en'], gpu=True)
+        logging.warning("loading gpu module...")
+        reader = easyocr.Reader(['en'], gpu=False)
         # create a string to write the recognized text to
         text = ""
-        logging.info("init done")
+        logging.warning("init done")
     except Exception as e:
         logging.error(e)
         sys.exit(1)
     
     if args.mode == "image":
+        startTime = time.time()
         # get number of image as command line input
         number_image = str(args.number_image)
         name_img = "images/Dataset_Stripe/1,5ms_k2_" + number_image + ".jpg"
+        #name_img = str(args.file)
         # call the function to load the image
         img = load_image(name_img)
         # call the function to remove the vignetting
@@ -80,9 +80,7 @@ def main():
                     # deskew ROI
                     img_roi, box = orientation_correction(i, img_corrected)
                     # 2x2 binning the ROI to speed up the OCR
-                    img_roi_bin = np.uint8(binning(img_roi, ((img_roi.shape[0]//2), (img_roi.shape[1]//2))))
-                    # text recognition in ROI (pytesseract)
-                    #text, match = text_recognition(text, img_roi_bin, OCR_config)
+                    #img_roi_bin = np.uint8(binning(img_roi, ((img_roi.shape[0]//2), (img_roi.shape[1]//2))))
                     # text recognition in ROI (easyocr)
                     text, match = text_recognition_gpu(text, img_roi, reader)
                     # draw a box and the detected text to the original image, if a match was found
@@ -93,7 +91,9 @@ def main():
                         # put recognized text in top left corner
                         cv.putText(img_rgb, text, (25, 100), cv.FONT_HERSHEY_SIMPLEX, 3, (0,255,0))
                     else:
-                        pass
+                        box = np.int0(box)
+                        # draw red box
+                        cv.drawContours(img_rgb,[box],0,(0,0,255),2)
                 else:
                     pass
         else:
@@ -125,9 +125,9 @@ def main():
             sys.exit(1)
         
         #start recording routine
+        startTime = time.time()
         cv.namedWindow("press ESC to close", cv.WINDOW_NORMAL)
         while camera.IsConnected():
-            #startRun1 = time.time()
             # create a string to write the recognized text to
             text = ""
             img_raw = camera.GetImage().GetNPArray()
@@ -151,9 +151,9 @@ def main():
                         # deskew ROI
                         img_roi, box = orientation_correction(i, img_corrected)
                         # 2x2 binning the ROI to speed up the OCR
-                        img_roi_bin = np.uint8(binning(img_roi, ((img_roi.shape[0]//2), (img_roi.shape[1]//2))))
-                        # text recognition in ROI
-                        text, match = text_recognition(text, img_roi_bin, OCR_config)
+                        #img_roi_bin = np.uint8(binning(img_roi, ((img_roi.shape[0]//2), (img_roi.shape[1]//2))))
+                        # text recognition in ROI (easyocr)
+                        text, match = text_recognition_gpu(text, img_roi, reader)
                         # draw a box and the detected text to the original image, if a match was found
                         if match == True:
                             box = np.int0(box)
@@ -194,12 +194,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-#cv.imwrite("output_"+number_image+".jpg", img_rgb)
-#cv.imshow("Image", img)
-#cv.imshow("Image corrected", img_corrected)
-#cv.imshow("img_preprocessed", img_preprocessed)
-#cv.imshow("Image edges", img_rgb)
-
-#cv.waitKey(0)
-#cv.destroyAllWindows()
