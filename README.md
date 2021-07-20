@@ -8,4 +8,13 @@ To use the rent-a-cam system, just place a labeled camera inside the box. An IR-
 To get the system up and running, follow the installation_guide.md
      
 ## Samples
-read img....
+After everything was installed, the installation can be validated by running the program and performing text recognition on one of the sample images. They can be found in the path /images/DataSet_Stripe/.
+Activate the virtual environment by typing
+~~~
+workon <name_of_your_env>
+~~~
+or without virtualenvwrapper
+~~~
+source ./<path_to_your_env>/bin/activate
+~~~
+to your consol.
