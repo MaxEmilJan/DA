@@ -7,7 +7,7 @@ To use the rent-a-cam system, just place a labeled camera inside the box. An IR-
 ## Installation
 To get the system up and running, follow the installation_guide.md
      
-## Samples
+## Getting Started
 After everything was installed, the installation can be validated by running the program and performing text recognition on one of the sample images. They can be found in the path:
 ~~~
 images/DataSet_Stripe/
