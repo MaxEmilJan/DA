@@ -88,3 +88,7 @@ Furthermore the following packages might be usefull for things like debugging:
 ~~~
 sudo apt-get install nano
 ~~~
+* spyder IDE
+~~~
+pip install spyder
+~~~
