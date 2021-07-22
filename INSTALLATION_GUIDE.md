@@ -1,3 +1,5 @@
+## required
+
 To setup the NVIDIA Jetson Nano for this particular usecase, follow the "Getting Started" introduction by NVIDIA.
 After the OS is running and an user was added, you can start to install the required packages.
 The following packages and their dependencies are needed:
@@ -81,10 +83,15 @@ pip install llvmlite==0.30.0
 ~~~
 pip install numba==0.46.0
 ~~~
+## optional
 
 Furthermore the following packages might be usefull for things like debugging:
 * Baumer CameraExplorer (installed by following the official guide)
 * nano
 ~~~
 sudo apt-get install nano
+~~~
+* spyder IDE
+~~~
+pip install spyder
 ~~~
