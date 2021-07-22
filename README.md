@@ -1,4 +1,4 @@
-# rent-a-cam
+# rent a cam
 ## Description
 "rent-a-cam" is a smart camera recognition system which was developed to run mainly on a NVIDIA Jetson Nano with an USB camera. It detects the labels which are printed on every camera. So in its core it is a text recognition algorithm which performs the needed preprocessing. Afterwards the optical character recognition is applied. Finally the algorithm searches the recognized text for a specific pattern ("#" followed by four digits) and extracts the four digits, if contained.
     
