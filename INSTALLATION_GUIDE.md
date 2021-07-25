@@ -35,34 +35,32 @@ sudo pip install virtualenv virtualenvwrapper
 mkvirtualenv <name_of_your_env> -p3.6
 workon <name_of_your_env>
 ~~~
+From here on, all the packages must be installed inside the virtuel environment. So it should stay activated.
+
+
 6. install the Baumer NeoAPI to your environment by following the official installation guide
 
-7. install PyTorch while in your env
+7. install PyTorch
 ~~~
 wget https://nvidia.box.com/shared/static/p57jwntv436lfrd78inwl7iml6p13fzh.whl -O torch-1.9.0-cp36-cp36m-linux_aarch64.whl
 sudo apt-get install python3-pip libopenblas-base libopenmpi-dev 
 pip install Cython
-pip install numpy torch-1.8.0-cp36-cp36m-linux_aarch64.whl
+pip install numpy==1.19.4 torch-1.8.0-cp36-cp36m-linux_aarch64.whl
 rm torch-1.8.0-cp36-cp36m-linux_aarch64.whl
 ~~~
-8. Since the previous step also installed numpy 1.19.5 we have to remove it and replace it with numpy 1.19.4 (1.19.5 does not work in a virtual env)
-~~~
-pip uninstall numpy
-pip install numpy==1.19.4
-~~~
-9. install easyocr in your env
+10. install easyocr in your env
 ~~~
 pip install easyocr
 ~~~
-10. install opencv in your env
+11. install opencv in your env
 ~~~
 pip install opencv-python
 ~~~
-13. install smbus
+12. install smbus
 ~~~
 pip install smbus
 ~~~
-14. install numba dependencies
+13. install numba dependencies
 ~~~
 wget http://releases.llvm.org/7.0.1/llvm-7.0.1.src.tar.xz
 tar -xvf llvm-7.0.1.src.tar.xz
@@ -79,7 +77,7 @@ echo "alias llvm='"`pwd`"/llvm-lit'" >> ~/.bashrc
 source ~/.bashrc
 pip install llvmlite==0.30.0
 ~~~
-15. install numba
+14. install numba
 ~~~
 pip install numba==0.46.0
 ~~~
