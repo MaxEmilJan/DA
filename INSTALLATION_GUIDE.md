@@ -9,7 +9,7 @@ The following packages and their dependencies are needed:
 * numba
 * easyocr, pytesseract
 * smbus
-
+---
 1. remove libreoffice and the preinstalled numpy version, since it consumes a lot of memory and is not needed for this application.
 ~~~
 sudo apt-get purge libreoffice*
@@ -35,10 +35,9 @@ sudo pip install virtualenv virtualenvwrapper
 mkvirtualenv <name_of_your_env> -p3.6
 workon <name_of_your_env>
 ~~~
-From here on, all the packages must be installed inside the virtuel environment. So it should stay activated.
 
-
-6. install the Baumer NeoAPI to your environment by following the official installation guide
+6. From here on, all the packages must be installed inside the virtuel environment. So it should stay activated.\
+install the Baumer NeoAPI to your environment by following the official installation guide
 
 7. install PyTorch
 ~~~
@@ -81,6 +80,7 @@ pip install llvmlite==0.30.0
 ~~~
 pip install numba==0.46.0
 ~~~
+---
 ## optional
 
 Furthermore the following packages might be usefull for things like debugging:
