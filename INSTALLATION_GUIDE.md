@@ -26,14 +26,14 @@ wget https://bootstrap.pypa.io/get-pip.py
 sudo python3 get-pip.py
 rm get-pip.py
 ~~~
-4. install virtualenv and virtualenvwrapper
+4. install virtualenv
 ~~~
-sudo pip install virtualenv virtualenvwrapper
+sudo pip install virtualenv
 ~~~
 5. create and activate a virtualenv with python 3.6
 ~~~
-mkvirtualenv <name_of_your_env> -p3.6
-workon <name_of_your_env>
+virtualenv <name_of_your_env> -p3.6
+source ./<name_of_your_env>/bin/activate
 ~~~
 
 6. From here on, all the packages must be installed inside the virtuel environment. So it should stay activated.\
