@@ -2,7 +2,7 @@ import cv2 as cv
 import re
 import logging 
 import sys
-
+import time
 logger = logging.getLogger(__name__)
 
 # function to evaluate the detected edges and areas
@@ -11,8 +11,12 @@ def text_recognition_gpu(text_img, img_roi, reader):
         # apply thresholding to the ROI
         _, img_roi_thresh = cv.threshold(img_roi, 100, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
         # extract the text which is visible in the ROI
-        text_roi = reader.readtext(img_roi_thresh, detail=0)
+        startTime = time.time()
+        #text_roi = reader.readtext(img_roi_thresh,detail=0,rotation_info=[180])
+        text_roi = reader.recognize(img_roi_thresh,detail=0)
+        #print(time.time()-startTime)
         # add the text to a string if it contains a "#" symbol followed by 4 digits
+        print(text_roi)
         text_digit = re.search(r"#(\d{4})", str(text_roi))
         if text_digit is not None:
             # only add the digits and not the "#"
@@ -30,7 +34,8 @@ def text_recognition_gpu(text_img, img_roi, reader):
             # rotate ROI 180 degrees
             img_rot = cv.warpAffine(img_roi_thresh, M, (width, height))
             # repeat text recognition and pattern extraction
-            text_roi = reader.readtext(img_rot, detail=0)
+            text_roi = reader.recognize(img_rot,detail=0)
+            print(time.time()-startTime)
             text_digit = re.search(r"#(\d{4})", str(text_roi))
             if text_digit is not None:
                 # only add the digits and not the "#"
