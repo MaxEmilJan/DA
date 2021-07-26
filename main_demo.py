@@ -5,7 +5,7 @@ import logging
 import numpy as np
 import cv2 as cv
 import neoapi
-import easyocr
+from easyocr import Reader
 from load_image import load_image
 from load_frame import load_frame
 from vignetting_correction.vignetting_correction import vignetting_correction
