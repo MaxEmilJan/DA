@@ -13,7 +13,7 @@ from ocr.preprocessing import preprocessing
 from ocr.edge_detection import canny_edge_detection
 from ocr.orientation_correction import orientation_correction
 from ocr.binning import binning
-from ocr.text_recognition_easyocr import text_recognition_gpu
+from ocr.text_recognition_gpu import text_recognition_gpu
 
 
 # used camera parameters:
@@ -36,15 +36,17 @@ def main():
         logging.basicConfig(level=logging.WARNING, format='File: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
     
     try:
-        logging.warning("init...")
+        logging.warning("init opencv...")
         # load vignetting_correction_mask.npy to work with this array
         vignett_mask = np.load("vignetting_correction/vignetting_correction_mask.npy")
         # create the necessary filters for morphologic operations
         filter_close = cv.getStructuringElement(cv.MORPH_RECT, (4,4))
         filter_dil = cv.getStructuringElement(cv.MORPH_RECT, (51,51))
         # define easyocr reader module
-        logging.warning("loading gpu module...")
+        logging.warning("init easyocr...")
+        img_init = cv.imread("images/init_roi.png")[...,0]
         reader = easyocr.Reader(['en'], gpu=True)
+        reader.recognize(img_init, detail=0)
         # create a string to write the recognized text to
         text = ""
         logging.warning("init done")

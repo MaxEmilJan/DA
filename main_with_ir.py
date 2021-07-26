@@ -13,7 +13,7 @@ from ocr.preprocessing import preprocessing
 from ocr.edge_detection import canny_edge_detection
 from ocr.orientation_correction import orientation_correction
 from ocr.binning import binning
-from ocr.text_recognition_easyocr import text_recognition_gpu
+from ocr.text_recognition_gpu import text_recognition_gpu
 
 
 # used camera parameters:
@@ -23,21 +23,24 @@ from ocr.text_recognition_easyocr import text_recognition_gpu
 
 def main():
     try:
-        logging.warning("init...")
+        logging.warning("init I2C...")
         # ---- I2C ----
         # Jetson Nano I2C Bus 0 (SDA Pin 27, SCL Pin 28)
         bus = smbus.SMBus(0)
         # address (must be the same as in the arduino script)
         address = 0x40
         # ---- OCR ----
+        logging.warning("init opencv...")
         # load vignetting_correction_mask.npy to work with this array
         vignett_mask = np.load("vignetting_correction/vignetting_correction_mask.npy")
         # create the necessary filters for morphologic operations
         filter_close = cv.getStructuringElement(cv.MORPH_RECT, (4,4))
         filter_dil = cv.getStructuringElement(cv.MORPH_RECT, (51,51))
         # define easyocr reader module
-        logging.warning("loading gpu module")
+        logging.warning("init easyocr...")
+        img_init = cv.imread("images/init_roi.png")[...,0]
         reader = easyocr.Reader(['en'], gpu=True)
+        reader.readtext(img_init, detail=0)
         # create a string to write the recognized text to
         text = ""
         # create a counter variable to count the amount of equal text recognitions in a row
