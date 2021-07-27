@@ -51,7 +51,7 @@ rm torch-1.9.0-cp36-cp36m-linux_aarch64.whl
 ~~~
 pip install easyocr
 ~~~
-11. install opencv in your env (skip this part if the desired version (4.5.x) of opencv was installed with easyocr)
+11. install opencv in your env\ (skip this part if the desired version (4.5.x) of opencv was installed with easyocr)
 ~~~
 pip install opencv-python
 ~~~
@@ -84,7 +84,7 @@ pip install numba==0.46.0
 ~~~
 sudo apt install tesseract-ocr libtesseract-dev
 ~~~
-16. check the path to the tesseract directory an past it into the head of the "text_recognition_cpu.py" file (default is /usr/bin/tesseract)
+16. check the path to the tesseract directory an past it into the head of the "text_recognition_cpu.py" file\ (default is /usr/bin/tesseract)
 ~~~
 which tesseract
 ~~~
