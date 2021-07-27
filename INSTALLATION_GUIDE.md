@@ -9,7 +9,7 @@ The following packages and their dependencies are needed:
 * numba
 * easyocr, pytesseract
 * smbus
-
+---
 1. remove libreoffice and the preinstalled numpy version, since it consumes a lot of memory and is not needed for this application.
 ~~~
 sudo apt-get purge libreoffice*
@@ -76,7 +76,20 @@ pip install llvmlite==0.30.0
 ~~~
 pip install numba==0.46.0
 ~~~
-
+12. install tesseract
+~~~
+sudo apt install tesseract-ocr libtesseract-dev
+~~~
+13. find path to tesseract directory and paste it to the header of the 'text_recognition_cpu.py' file\
+(default is /usr/bin/tesseract)
+~~~
+which tesseract
+~~~
+14. install pytesseract
+~~~
+pip install pytesseract
+~~~
+---
 ## optional
 
 Furthermore the following packages might be usefull for things like debugging:
