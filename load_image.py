@@ -11,7 +11,7 @@ def load_image(name_image):
         img_raw = cv.imread(name_image)[...,0]
         # select ROI and only keep this part
         img_cut = img_raw[300:1075, 150:1790]
-        cv.imwrite("vignetting_correction/test_image.jpg", img_cut)
+        #cv.imwrite("vignetting_correction/test_image.jpg", img_cut)
         logger.info("image loading done")
     except Exception as e:
         logger.error(e)

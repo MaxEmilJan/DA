@@ -5,7 +5,7 @@ import logging
 import numpy as np
 import cv2 as cv
 import neoapi
-from easyocr import Reader
+import easyocr
 from load_image import load_image
 from load_frame import load_frame
 from vignetting_correction.vignetting_correction import vignetting_correction
@@ -13,6 +13,7 @@ from ocr.preprocessing import preprocessing
 from ocr.edge_detection import canny_edge_detection
 from ocr.orientation_correction import orientation_correction
 from ocr.binning import binning
+from ocr.text_recognition_cpu import text_recognition_cpu
 from ocr.text_recognition_gpu import text_recognition_gpu
 
 
@@ -36,20 +37,16 @@ def main():
         logging.basicConfig(level=logging.WARNING, format='File: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
     
     try:
-        logging.warning("init opencv...")
+        logging.warning("creating image filters... [openCV]")
         # load vignetting_correction_mask.npy to work with this array
         vignett_mask = np.load("vignetting_correction/vignetting_correction_mask.npy")
         # create the necessary filters for morphologic operations
         filter_close = cv.getStructuringElement(cv.MORPH_RECT, (4,4))
         filter_dil = cv.getStructuringElement(cv.MORPH_RECT, (51,51))
-        # define easyocr reader module
-        logging.warning("init easyocr...")
-        img_init = cv.imread("images/init_roi.png")[...,0]
-        reader = easyocr.Reader(['en'], gpu=True)
-        reader.recognize(img_init, detail=0)
         # create a string to write the recognized text to
         text = ""
-        logging.warning("init done")
+        # create the empty output img
+        img_rgb = np.zeros((775,1640))
     except Exception as e:
         logging.error(e)
         sys.exit(1)
@@ -59,6 +56,8 @@ def main():
         number_image = str(args.number_image)
         name_img = "images/Dataset_Stripe/1,5ms_k2_" + number_image + ".jpg"
         #name_img = str(args.file)
+        # define OCR config
+        tesseract_config = r'-c tessedit_char_whitelist=#1234567890 --psm 6'
         # call the function to load the image
         img = load_image(name_img)
         # call the function to remove the vignetting
@@ -82,18 +81,16 @@ def main():
                     # 2x2 binning the ROI to speed up the OCR
                     img_roi_bin = np.uint8(binning(img_roi, ((img_roi.shape[0]//2), (img_roi.shape[1]//2))))
                     # text recognition in ROI (easyocr)
-                    text, match = text_recognition_gpu(text, img_roi_bin, reader)
+                    text, match = text_recognition_cpu(text, img_roi_bin, tesseract_config)
                     # draw a box and the detected text to the original image, if a match was found
                     if match == True:
-                        box = np.int0(box)
-                        # draw green box
-                        cv.drawContours(img_rgb,[box],0,(0,255,0),2)
+                        # draw green box around matching ROI
+                        cv.drawContours(img_rgb,np.int32([box]),0,(0,255,0),2)
                         # put recognized text in top left corner
-                        cv.putText(img_rgb, text, (25, 100), cv.FONT_HERSHEY_SIMPLEX, 3, (0,255,0))
+                        cv.putText(img_rgb,text,(25, 100),cv.FONT_HERSHEY_SIMPLEX,3,(0,255,0))
                     else:
-                        box = np.int0(box)
                         # draw red box
-                        cv.drawContours(img_rgb,[box],0,(0,0,255),2)
+                        cv.drawContours(img_rgb,np.int32([box]),0,(0,0,255),2)
                 else:
                     pass
         else:
@@ -119,11 +116,23 @@ def main():
             camera.f.AcquisitionFrameRateEnable.value = True
             camera.f.AcquisitionFrameRate.value = 10
             logging.info("init camera done")
+            # preload numbas just in time compiler
+            logging.warning("loading just-in-time-compiler... [numba]")
+            img_init = cv.imread("images/img_init.jpg")[...,0]
+            vignetting_correction(img_init, vignett_mask)
+            # define easyocr reader module
+            logging.warning("loading gpu modules for ocr... [easyocr]")
+            img_init = cv.imread("images/img_init.jpg")[...,0]
+            reader = easyocr.Reader(['en'], gpu=True)
+            reader.recognize(img_init, detail=0)
         except Exception as e:
             logging.error(e)
             sys.exit(1)
         
         #start recording routine
+        cv.namedWindow("press ESC to close", cv.WINDOW_NORMAL)
+        cv.imshow("press ESC to close", img_rgb)
+        logging.warning("ready")
         while camera.IsConnected():
             startTime = time.time()
             # create a string to write the recognized text to
@@ -152,6 +161,11 @@ def main():
                         img_roi_bin = np.uint8(binning(img_roi, ((img_roi.shape[0]//2), (img_roi.shape[1]//2))))
                         # text recognition in ROI (easyocr)
                         text, match = text_recognition_gpu(text, img_roi_bin, reader)
+                        # if match is found
+                        if match == True:
+                            box_match = box
+                        else:
+                            pass
                     else:
                         pass
             else:
@@ -165,14 +179,13 @@ def main():
             # if a text which matches the pattern got recognized
             if text != "":
                 # draw green box around text
-                box = np.int0(np.array(box))
-                cv.drawContours(img_rgb, [box], 0, (0,255,0), 2)
+                cv.drawContours(img_rgb, np.int32([box_match]),0,(0,255,0),3)
                 # print recognized text in upper left corner
-                cv.putText(img_rgb, text, (25,100), cv.FONT_HERSHEY_SIMPLEX, 3, (0,255,0))
+                cv.putText(img_rgb,text,(25,100),cv.FONT_HERSHEY_SIMPLEX,3,(0,255,0))
                 cv.imshow("press ESC to end", img_rgb)
             else:
                 # print spareholder to upper left corner
-                cv.putText(img_rgb, "----", (25,100), cv.FONT_HERSHEY_SIMPLEX, 3, (0,0,255))
+                cv.putText(img_rgb,"----",(25,100),cv.FONT_HERSHEY_SIMPLEX,3,(0,0,255))
                 cv.imshow("press ESC to end", img_rgb)
 
             # to quit the demonstration press "ESC"

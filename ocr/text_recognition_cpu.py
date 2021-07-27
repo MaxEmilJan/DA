@@ -4,12 +4,12 @@ import re
 import logging 
 import sys
 # definde the PATH to your tesseract sidepackage
-pytesseract.pytesseract.tesseract_cmd = r'/home/max/anaconda3/envs/DA/bin/tesseract'
+pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
 
 logger = logging.getLogger(__name__)
 
 # function to evaluate the detected edges and areas
-def text_recognition(text_img, img_roi, custom_config):
+def text_recognition_cpu(text_img, img_roi, custom_config):
     try:
         # apply thresholding to the ROI
         _, img_roi_thresh = cv.threshold(img_roi, 100, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
