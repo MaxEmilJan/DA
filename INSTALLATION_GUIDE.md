@@ -26,43 +26,36 @@ wget https://bootstrap.pypa.io/get-pip.py
 sudo python3 get-pip.py
 rm get-pip.py
 ~~~
-4. install virtualenv and virtualenvwrapper
-~~~
-sudo pip install virtualenv virtualenvwrapper
-~~~
-5. create and activate a virtualenv with python 3.6
+4. create and activate a virtualenv with python 3.6
 ~~~
 mkvirtualenv <name_of_your_env> -p3.6
-workon <name_of_your_env>
+source ./<name_of_your_env>/bin/activate
 ~~~
-6. install the Baumer NeoAPI to your environment by following the official installation guide
+from now on the virtualenv should stay activated, since everything is going to get installed in the env
 
-7. install PyTorch while in your env
+5. install the Baumer NeoAPI by following the official installation guide
+
+6. install PyTorch
 ~~~
 wget https://nvidia.box.com/shared/static/p57jwntv436lfrd78inwl7iml6p13fzh.whl -O torch-1.9.0-cp36-cp36m-linux_aarch64.whl
 sudo apt-get install python3-pip libopenblas-base libopenmpi-dev 
 pip install Cython
-pip install numpy torch-1.8.0-cp36-cp36m-linux_aarch64.whl
+pip install numpy==1.19.4 torch-1.8.0-cp36-cp36m-linux_aarch64.whl
 rm torch-1.8.0-cp36-cp36m-linux_aarch64.whl
 ~~~
-8. Since the previous step also installed numpy 1.19.5 we have to remove it and replace it with numpy 1.19.4 (1.19.5 does not work in a virtual env)
-~~~
-pip uninstall numpy
-pip install numpy==1.19.4
-~~~
-9. install easyocr in your env
+7. install easyocr
 ~~~
 pip install easyocr
 ~~~
-10. install opencv in your env
+8. install opencv (should already be installed with easyocr; check if it is the desired version (4.5.X))
 ~~~
 pip install opencv-python
 ~~~
-13. install smbus
+9. install smbus
 ~~~
 pip install smbus
 ~~~
-14. install numba dependencies
+10. install numba dependencies
 ~~~
 wget http://releases.llvm.org/7.0.1/llvm-7.0.1.src.tar.xz
 tar -xvf llvm-7.0.1.src.tar.xz
@@ -79,10 +72,11 @@ echo "alias llvm='"`pwd`"/llvm-lit'" >> ~/.bashrc
 source ~/.bashrc
 pip install llvmlite==0.30.0
 ~~~
-15. install numba
+11. install numba
 ~~~
 pip install numba==0.46.0
 ~~~
+
 ## optional
 
 Furthermore the following packages might be usefull for things like debugging:
