@@ -77,8 +77,9 @@ def canny_edge_detection(img_preprocessed, filter_close, filter_dil):
         sys.exit(1)
     return img_dil, cnt_detected
 
-#filter_close = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
-#filter_dil = cv.getStructuringElement(cv.MORPH_RECT, (51,51))
-#img_blur = cv.imread("1,5ms_k2_7.jpg")[...,0]
-#img_edge, contours = canny_edge_detection(img_blur, filter_close, filter_dil)
-#cv.imwrite("test_edge.jpg", img_edge)
+if __name__ == '__main__':
+    filter_close = cv.getStructuringElement(cv.MORPH_RECT, (3,3))
+    filter_dil = cv.getStructuringElement(cv.MORPH_RECT, (51,51))
+    img_blur = cv.imread("1,5ms_k2_7.jpg")[...,0]
+    img_edge, contours = canny_edge_detection(img_blur, filter_close, filter_dil)
+    cv.imwrite("test_edge.jpg", img_edge)

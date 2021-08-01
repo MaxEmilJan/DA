@@ -15,6 +15,7 @@ def preprocessing(img):
         sys.exit(1)
     return img_blur
 
-#img_corrected = cv.imread("vignetting_correction/test_corrected.jpg")[...,0]
-#img_blur = preprocessing(img_corrected)
-#cv.imwrite("vignetting_correction/test_blur.jpg", img_blur)
+if __name__ == '__main__':
+    img_corrected = cv.imread("vignetting_correction/test_corrected.jpg")[...,0]
+    img_blur = preprocessing(img_corrected)
+    cv.imwrite("vignetting_correction/test_blur.jpg", img_blur)
