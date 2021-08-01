@@ -1,8 +1,7 @@
-import smbus
 import sys
 import logging
-import time
 logging.basicConfig(level=logging.WARNING, format='File: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
+import smbus
 import numpy as np
 import cv2 as cv
 import neoapi
@@ -85,18 +84,19 @@ def main():
             # reset text so it does not append everything detected
             text = ""
             # get the frame from the camera
-            img_raw = camera.GetImage().GetNPArray()
+            img = camera.GetImage().GetNPArray()
             # cut the edges and grayscale
-            img = load_frame(img_raw)
+            img = load_frame(img)
             # call the function to remove the vignetting
             img_corrected = np.uint8(vignetting_correction(img, vignett_mask))
+            img_rgb = cv.cvtColor(img_corrected, cv.COLOR_GRAY2RGB)
             # call the function to preprocess the image
-            img_preprocessed = preprocessing(img_corrected)
+            img = preprocessing(img_corrected)
             # call the function to detect edges
-            img_edges, flag_contours = canny_edge_detection(img_preprocessed, filter_close, filter_dil)
+            img, flag_contours = canny_edge_detection(img, filter_close, filter_dil)
             if flag_contours == True:
                 # find contours
-                contours, _ = cv.findContours(img_edges, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+                contours, _ = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
                 # loop through all the detected edges
                 for i in contours:
                     # get area of ROI
@@ -104,11 +104,11 @@ def main():
                     # filter all found contours which are too small to contain characters
                     if area >= 25000:
                         # deskew ROI
-                        img_roi, box = orientation_correction(i, img_corrected)
+                        img, box = orientation_correction(i, img_corrected)
                         # 2x2 binning the ROI to speed up the OCR
-                        img_roi_bin = np.uint8(binning(img_roi, ((img_roi.shape[0]//2), (img_roi.shape[1]//2))))
+                        img = np.uint8(binning(img, ((img.shape[0]//2), (img.shape[1]//2))))
                         # text recognition with easyocr
-                        text, match = text_recognition_gpu(text, img_roi_bin, reader)
+                        text, match = text_recognition_gpu(text, img, reader)
                         # if a match is found, evaluate its continuity
                         if match == True:
                             box_match = box
@@ -128,7 +128,6 @@ def main():
             else:
                 pass
             # print the results
-            img_rgb = cv.cvtColor(img_corrected, cv.COLOR_GRAY2RGB)
             # if a text which matches the pattern was recognized
             if text != "":
                 # draw green box around matching ROI and print text in upper left corner

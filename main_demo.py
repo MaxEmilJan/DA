@@ -182,11 +182,11 @@ def main():
                 cv.drawContours(img_rgb, np.int32([box_match]),0,(0,255,0),3)
                 # print recognized text in upper left corner
                 cv.putText(img_rgb,text,(25,100),cv.FONT_HERSHEY_SIMPLEX,3,(0,255,0))
-                cv.imshow("press ESC to end", img_rgb)
+                cv.imshow("press ESC to close", img_rgb)
             else:
                 # print spareholder to upper left corner
                 cv.putText(img_rgb,"----",(25,100),cv.FONT_HERSHEY_SIMPLEX,3,(0,0,255))
-                cv.imshow("press ESC to end", img_rgb)
+                cv.imshow("press ESC to close", img_rgb)
 
             # to quit the demonstration press "ESC"
             if cv.waitKey(1) == 27:
