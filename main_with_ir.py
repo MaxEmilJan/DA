@@ -1,7 +1,8 @@
+import smbus
 import sys
 import logging
+import time
 logging.basicConfig(level=logging.WARNING, format='File: %(filename)s, Line: %(lineno)d \nMessage: %(message)s')
-import smbus
 import numpy as np
 import cv2 as cv
 import neoapi
@@ -72,6 +73,7 @@ def main():
             
     #start recording routine
     cv.namedWindow("press ESC to close", cv.WINDOW_NORMAL)
+    cv.resizeWindow("press ESC to close", 1640, 775)
     cv.imshow("press ESC to close", img_rgb)
     logging.warning("ready")
     while camera.IsConnected():
@@ -84,19 +86,18 @@ def main():
             # reset text so it does not append everything detected
             text = ""
             # get the frame from the camera
-            img = camera.GetImage().GetNPArray()
+            img_raw = camera.GetImage().GetNPArray()
             # cut the edges and grayscale
-            img = load_frame(img)
+            img = load_frame(img_raw)
             # call the function to remove the vignetting
             img_corrected = np.uint8(vignetting_correction(img, vignett_mask))
-            img_rgb = cv.cvtColor(img_corrected, cv.COLOR_GRAY2RGB)
             # call the function to preprocess the image
-            img = preprocessing(img_corrected)
+            img_preprocessed = preprocessing(img_corrected)
             # call the function to detect edges
-            img, flag_contours = canny_edge_detection(img, filter_close, filter_dil)
+            img_edges, flag_contours = canny_edge_detection(img_preprocessed, filter_close, filter_dil)
             if flag_contours == True:
                 # find contours
-                contours, _ = cv.findContours(img, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
+                contours, _ = cv.findContours(img_edges, cv.RETR_TREE, cv.CHAIN_APPROX_SIMPLE)
                 # loop through all the detected edges
                 for i in contours:
                     # get area of ROI
@@ -104,11 +105,11 @@ def main():
                     # filter all found contours which are too small to contain characters
                     if area >= 25000:
                         # deskew ROI
-                        img, box = orientation_correction(i, img_corrected)
+                        img_roi, box = orientation_correction(i, img_corrected)
                         # 2x2 binning the ROI to speed up the OCR
-                        img = np.uint8(binning(img, ((img.shape[0]//2), (img.shape[1]//2))))
+                        img_roi_bin = np.uint8(binning(img_roi, ((img_roi.shape[0]//2), (img_roi.shape[1]//2))))
                         # text recognition with easyocr
-                        text, match = text_recognition_gpu(text, img, reader)
+                        text, match = text_recognition_gpu(text, img_roi_bin, reader)
                         # if a match is found, evaluate its continuity
                         if match == True:
                             box_match = box
@@ -128,15 +129,16 @@ def main():
             else:
                 pass
             # print the results
+            img_rgb = cv.cvtColor(img_corrected, cv.COLOR_GRAY2RGB)
             # if a text which matches the pattern was recognized
             if text != "":
                 # draw green box around matching ROI and print text in upper left corner
-                cv.putText(img_rgb,text,(25, 100),cv.FONT_HERSHEY_SIMPLEX,3,(0,255,0))
+                cv.putText(img_rgb,text,(25, 100),cv.FONT_HERSHEY_SIMPLEX,3,(0,255,0),2)
                 cv.drawContours(img_rgb,np.int32([box_match]),0,(0,255,0),3)
             # if no match was found
             else:
                 # put spareholder in top left corner
-                cv.putText(img_rgb,"----",(25,100),cv.FONT_HERSHEY_SIMPLEX,3,(0,0,255))
+                cv.putText(img_rgb,"----",(25,100),cv.FONT_HERSHEY_SIMPLEX,3,(0,0,255),2)
             # check the counter
             # if the same four digits were recognized in a row, then make it the final result
             if cnt == 3:
@@ -154,6 +156,8 @@ def main():
         # if IR-Sensor does not detect an obstacle, do nothing
         else:
             img_rgb = np.zeros((775,1640))
+            cv.putText(img_rgb,"Please place a camera",(250,300),cv.FONT_HERSHEY_SIMPLEX,3,(255,255,255),2)
+            cv.putText(img_rgb,"inside the box.",(450,500),cv.FONT_HERSHEY_SIMPLEX,3,(255,255,255),2)
             cv.imshow("press ESC to close", img_rgb)
             if cv.waitKey(1) == 27:
                 cv.destroyAllWindows()

@@ -5,6 +5,7 @@ import numpy as np
 import cv2 as cv
 import neoapi
 import easyocr
+import smbus
 
 from load_frame import load_frame
 from vignetting_correction.vignetting_correction import vignetting_correction
@@ -17,6 +18,11 @@ from ocr.text_recognition_gpu import text_recognition_gpu
 from PyQt5.QtCore import QRect, Qt, QThread, pyqtSignal, pyqtSlot
 from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QListWidget, QListWidgetItem, QAbstractItemView, QWidget
 from PyQt5.QtGui import QFont, QPixmap, QImage
+
+# used camera parameters:
+    # f = 5cm
+    # k = 2
+    # t = 1,5ms
 
 
 # Thread do the video recording an image processing
@@ -52,9 +58,12 @@ class VideoThread(QThread):
             sys.exit(1)
 
     def run(self):
-        logging.warning("ocr running")
+        logging.warning("VideoThread running")
         # capture from web cam
         while self._run_flag:
+            signal = bus.read_byte(address)
+            # if the IR-Sensor detects an obstacle, run the image processing
+            #if signal == 1:
             # save text of previous run
             text_prev = self.text
             # reset text so it does not append everything detected
@@ -87,13 +96,13 @@ class VideoThread(QThread):
                         self.text, match = text_recognition_gpu(self.text, cv_img, reader)
                         # if a match is found, evaluate its continuity
                         if match == True:
-                                box_match = box
-                                # count the amount of equal texts recognized in a row
-                                if self.text == text_prev:
-                                    self.cnt += 1
-                                # if another text which fits the pattern gets recognized, reset the counter
-                                else:
-                                    self.cnt = 0
+                            box_match = box
+                            # count the amount of equal texts recognized in a row
+                            if self.text == text_prev:
+                                self.cnt += 1
+                            # if another text which fits the pattern gets recognized, reset the counter
+                            else:
+                                self.cnt = 0
                         # if no match was found, do nothing
                         else:
                             pass
@@ -126,25 +135,25 @@ class VideoThread(QThread):
                 pass
             # pass the result to the Gui class
             self.change_pixmap_signal.emit(img_rgb)
-        # if IR-Sensor does not detect an obstacle, do nothing
-        #else:
-        #    img_rgb = np.zeros((775,1640))
-        #    cv.imshow("press ESC to close", img_rgb)
-        #    return img_rgb
+            # if IR-Sensor does not detect an obstacle, show the "idle" image
+            #else:
+            #    # show the idle image 
+            #    img_rgb = np.zeros((775,1640))
+            #    self.change_pixmap_signal.emit(img_rgb)
         # if no camera is connected, print this
         else:
             logging.error("no camera connected")
             img_rgb = np.zeros((775,1640))
-            cv.putText(img_rgb,"Put a camera into the box",(150,200),cv.FONT_HERSHEY_SIMPLEX,3,(255,255,255),3)
-            cv.putText(img_rgb,"to scan its label",(400, 400), cv.FONT_HERSHEY_SIMPLEX,3,(255,255,255),3)
-            cv.putText(img_rgb,"and rent or return it.",(300, 600), cv.FONT_HERSHEY_SIMPLEX,3,(255,255,255),3)
+            cv.putText(img_rgb,"no camera connected",(100,100),cv.FONT_HERSHEY_SIMPLEX,3,(255,255,255),2)
             self.change_pixmap_signal.emit(img_rgb)
 
     # this methode is executed when the GUI gets closed
     def stop(self):
         # Sets run flag to False and waits for thread to finish
+        logging.warning("waiting for the video thread to finish")
         self._run_flag = False
         self.wait()
+        logging.warning("video thread closed and camera released")
         
 
 # this class created the GUI
@@ -184,32 +193,22 @@ class Gui(QWidget):
         self.label_status.setAlignment(Qt.AlignRight)
         self.label_status.setFont(QFont("Arial", 15, QFont.Bold))
         self.label_status.setObjectName("label_status")
-        self.label_status.setText("------")
+        self.label_status.setText("idle")
         # buttons to rent, return, repeat or cancel (30,100,30),(100,30,30),(150,85,0),(30,30,30)
         self.button_rent = QPushButton(self)
-        self.button_rent.setGeometry(QRect(30, 599, 191, 121))
+        self.button_rent.setEnabled(False)
+        self.button_rent.setGeometry(QRect(30, 599, 400, 121))
         self.button_rent.setStyleSheet("background-color: rgb(30, 30, 30); font: 20pt \"Noto Sans\";")
         self.button_rent.setObjectName("button_rent")
         self.button_rent.setText("rent")
         self.button_rent.clicked.connect(self.rentclicked_event)
         self.button_return = QPushButton(self)
-        self.button_return.setGeometry(QRect(249, 599, 191, 121))
+        self.button_return.setEnabled(False)
+        self.button_return.setGeometry(QRect(476, 599, 400, 121))
         self.button_return.setStyleSheet("background-color: rgb(30, 30, 30); font: 20pt \"Noto Sans\";")
         self.button_return.setObjectName("button_return")
         self.button_return.setText("return")
         self.button_return.clicked.connect(self.returnclicked_event)
-        self.button_repeat = QPushButton(self)
-        self.button_repeat.setGeometry(QRect(468, 599, 191, 121))
-        self.button_repeat.setStyleSheet("background-color: rgb(30, 30, 30); font: 20pt \"Noto Sans\";")
-        self.button_repeat.setObjectName("button_repeat")
-        self.button_repeat.setText("scan again")
-        self.button_repeat.clicked.connect(self.repeatclicked_event)
-        self.button_cancel = QPushButton(self)
-        self.button_cancel.setGeometry(QRect(685, 599, 191, 121))
-        self.button_cancel.setStyleSheet("background-color: rgb(30, 30, 30); font: 20pt \"Noto Sans\";")
-        self.button_cancel.setObjectName("button_cancel")
-        self.button_cancel.setText("cancle")
-        self.button_cancel.clicked.connect(self.cancelclicked_event)
         # screen to display the output image of main.py
         self.screen = QLabel(self)
         self.screen.setObjectName("screen")
@@ -225,27 +224,48 @@ class Gui(QWidget):
         font = QFont()
         font.setPointSize(20)
         item1.setFont(font)
-        item1.setText("asb")
-        item1.setSelected(True)
+        item1.setText("---select---")
         self.list.addItem(item1)
         item2 = QListWidgetItem()
-        #font = QFont()
-        #font.setPointSize(20)
         item2.setFont(font)
-        item2.setText("mbec")
+        item2.setText("asb")
         self.list.addItem(item2)
         item3 = QListWidgetItem()
-        #font = QFont()
-        #font.setPointSize(20)
         item3.setFont(font)
-        item3.setText("trc")
+        item3.setText("mbec")
         self.list.addItem(item3)
         item4 = QListWidgetItem()
-        #font = QFont()
-        #font.setPointSize(20)
         item4.setFont(font)
-        item4.setText("srec")
+        item4.setText("trc")
         self.list.addItem(item4)
+        item5 = QListWidgetItem()
+        item5.setFont(font)
+        item5.setText("srec")
+        self.list.addItem(item5)
+        item6 = QListWidgetItem()
+        item6.setFont(font)
+        item6.setText("lli")
+        self.list.addItem(item6)
+        item7 = QListWidgetItem()
+        item7.setFont(font)
+        item7.setText("jdan")
+        self.list.addItem(item7)
+        item8 = QListWidgetItem()
+        item8.setFont(font)
+        item8.setText("hkat")
+        self.list.addItem(item8)
+        item9 = QListWidgetItem()
+        item9.setFont(font)
+        item9.setText("sdan")
+        self.list.addItem(item9)
+        item10 = QListWidgetItem()
+        item10.setFont(font)
+        item10.setText("pkar")
+        self.list.addItem(item10)
+        item11 = QListWidgetItem()
+        item11.setFont(font)
+        item11.setText("jdi")
+        self.list.addItem(item11)
         self.list.setCurrentItem(item1)
         self.list.itemClicked.connect(self.listClicked_event)
         
@@ -286,58 +306,58 @@ class Gui(QWidget):
         self.label_camnumber.setText(cam_ID)
         if cam_ID != "----":
             self.button_rent.setStyleSheet("background-color: rgb(30, 100, 30); font: 20pt \"Noto Sans\";")
+            self.button_rent.setEnabled(True)
             self.button_return.setStyleSheet("background-color: rgb(100, 30, 30); font: 20pt \"Noto Sans\";")
-            self.button_repeat.setStyleSheet("background-color: rgb(150, 100, 0); font: 20pt \"Noto Sans\";")
-            self.button_cancel.setStyleSheet("background-color: rgb(50, 50, 50); font: 20pt \"Noto Sans\";")
+            self.button_return.setEnabled(True)
         else:
             self.button_rent.setStyleSheet("background-color: rgb(30, 30, 30); font: 20pt \"Noto Sans\";")
+            self.button_rent.setEnabled(False)
             self.button_return.setStyleSheet("background-color: rgb(30, 30, 30); font: 20pt \"Noto Sans\";")
-            self.button_repeat.setStyleSheet("background-color: rgb(30, 30, 30); font: 20pt \"Noto Sans\";")
-            self.button_cancel.setStyleSheet("background-color: rgb(30, 30, 30); font: 20pt \"Noto Sans\";")
-            self.label_status.setText("----")
+            self.button_return.setEnabled(False)
+            self.label_status.setStyleSheet("color: rgb(0, 0, 0);")
+            self.label_status.setText("idle")
         
     # the event handling functions which the buttons are connected to
     def listClicked_event(self):
-        item = self.list.selectedItems()[0]
-        self.label_status.setText(str(item.text()))
+        # currently just a placeholder function
+        # connection to the Baumer databank should get implemented here
+        pass
         
     def rentclicked_event(self):
         # if a camera was detected and the "rent" button is pushed, do this
-        if self.label_camnumber.text() != "----":
+        if self.label_camnumber.text() != "----" and self.list.selectedItems()[0].text() != "---select---":
             # the detected camera ID and the User is printed
+            self.label_status.setStyleSheet("color: rgb(30, 100, 30);")
             self.label_status.setText("Camera " + self.label_camnumber.text() + " rented by " + self.list.selectedItems()[0].text() + ".")
             # the connection to the Baumer databank should get implemented here
-        # if no camera was detected and the "rent" butoon was pushed, do this
+        # if no user was selected
         else:
-            # warning printed
-            self.label_status.setText("No camera was detected yet. Please put a camera into the box.")
+            # print a warning
+            self.label_status.setStyleSheet("color: rgb(100, 30, 30);")
+            self.label_status.setText("Please select your user shortcut first!")
+            
         
     def returnclicked_event(self):
         # if a camera was detected and the "return" button is pushed, do this
-        if self.label_camnumber.text() != "----":
+        if self.label_camnumber.text() != "----" and self.list.selectedItems()[0].text() != "---select---":
             # the detected camera ID and the User is printed
+            self.label_status.setStyleSheet("color: rgb(30, 100, 30);")
             self.label_status.setText("Camera " + self.label_camnumber.text() + " returned by " + self.list.selectedItems()[0].text() + ".")
             # the connection to the Baumer databank should get implemented here
-        # if no camera was detected and the "rent" butoon was pushed, do this
+        # if no user was selected
         else:
-            # warning printed
-            self.label_status.setText("No camera was detected yet. Please put a camera into the box.")
-        
-    def repeatclicked_event(self):
-        self.label_status.setText("scanning...")
-        
-    def cancelclicked_event(self):
-        self.label_status.setText("canceled")
-
+            # print a warning
+            self.label_status.setStyleSheet("color: rgb(100, 30, 30);")
+            self.label_status.setText("Please select your user shortcut first!")
 
 if __name__ == '__main__':
     try:
         logging.warning("initializing I2C bus...")
         # ---- I2C ----
         # Jetson Nano I2C Bus 0 (SDA Pin 27, SCL Pin 28)
-        #bus = smbus.SMBus(0)
+        bus = smbus.SMBus(0)
         # address (must be the same as in the arduino script)
-        #address = 0x40
+        address = 0x40
         # ---- OCR ----
         logging.warning("creating image filters... [openCV]")
         # load vignetting_correction_mask.npy to work with this array
