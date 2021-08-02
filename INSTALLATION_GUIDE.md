@@ -80,7 +80,7 @@ pip install numba==0.46.0
 ~~~
 sudo apt install tesseract-ocr libtesseract-dev
 ~~~
-13. find path to tesseract directory and paste it to the header of the 'text_recognition_cpu.py' file\
+13. find path to tesseract directory and paste it to the header of `text_recognition_cpu.py`\
 (default is /usr/bin/tesseract)
 ~~~
 which tesseract
@@ -93,13 +93,9 @@ pip install pytesseract
 ~~~
 sudo apt-get install python3-pyqt5
 ~~~
-16. Make the packages outside of your env accessable inside your env by editing "pyvenv.cfg".\
+16. Make the packages outside of your env accessable inside your env by editing `pyvenv.cfg`.\
 This file is located in the directory of your virtual env (should be /home/<name_of_your_env>/pyvenv.cfg).\
-There you set
-~~~
-system-site-packages = true
-~~~
-and save the changes.
+There you set `system-site-packages = true` and save the changes.
 
 ---
 ## optional
