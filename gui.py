@@ -9,7 +9,7 @@ import smbus
 
 from load_frame import load_frame
 from vignetting_correction.vignetting_correction import vignetting_correction
-from ocr.preprocessing import preprocessing
+from ocr.preprocessing import gaussian_blur
 from ocr.edge_detection import canny_edge_detection
 from ocr.orientation_correction import orientation_correction
 from ocr.binning import binning
@@ -22,7 +22,7 @@ from PyQt5.QtGui import QFont, QPixmap, QImage
 # used camera parameters:
     # f = 5cm
     # k = 2
-    # t = 1,5ms
+    # t = 15ms
 
 
 # Thread do the video recording an image processing
@@ -76,7 +76,7 @@ class VideoThread(QThread):
             cv_img_corrected = np.uint8(vignetting_correction(cv_img, vignett_mask))
             img_rgb = cv.cvtColor(cv_img_corrected, cv.COLOR_GRAY2RGB)
             # call the function to preprocess the image
-            cv_img = preprocessing(cv_img_corrected)
+            cv_img = gaussian_blur(cv_img_corrected)
             # call the function to detect edges
             cv_img, flag_contours = canny_edge_detection(cv_img, filter_close, filter_dil)
             if flag_contours == True:
