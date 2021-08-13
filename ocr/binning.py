@@ -13,6 +13,7 @@ if __name__ == '__main__':
     import cv2 as cv
     # load image and greyscale (1200, 1920)
     img = cv.imread("roi.jpg")[...,0]
+    _, img = cv.threshold(img, 100, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
     # 2x2 binning by reshaping the numpy array and calculate the mean along the reshaped axes
     img_bin = np.uint8(binning(img, ((img.shape[0]//2), (img.shape[1]//2))))
     cv.imshow("original", img)
