@@ -22,28 +22,28 @@ source ./<path_to_your_env>/bin/activate
 ~~~
 As soon as the virtualenv is active, just run the main.py file with the following flags:
 ~~~
-python main.py image -n <number_of_the_image>
+python main_debugg.py image -n <number_of_the_image>
 ~~~
 If no number is given, the algorithm will load the first image by default. It is also possible to load an image from another folder. Therefore the path must be given as an input
 ~~~
-python main.py image -f <path_to_image>
+python main_debugg.py image -f <path_to_image>
 ~~~
 But beware that the algorithm will expect an image with the size 1920x1080 and cut it in the process to 1640x775. So loading a smaller image will throw an error, if the load_image.py function and the vignetting_correction_mask.npy were not adjusted before. Loading a larger image will just cut out the upper left part of the image and continue processing only this area.
 
 If an USB-camera is available, the video mode can also be tested. Just type the following command:
 ~~~
-python main.py video
+python main_debugg.py video
 ~~~
 The algorithm was carefully programmed to work under specific lighting conditions. So if anything gets changed, the algorithm might not be as accurate and should get reconfigured. Most likely it will come down to reliably detecting the desired contours and ignore others (e.g. contours which are not closed, contours which have too many child contours, ...). To adjust this, it will be helpful to take a look at the edge_detection.py file and get into the documentation of OpenCVs image filtering functions, canny edge detection function as well as their findContours function.
 
 If additional information is needed during runtime (e.g. for the purpose of debugging) another flag is available:
 ~~~
-python main.py image -l
-python main.py video -l
+python main_debugg.py image -l
+python main_debugg.py video -l
 ~~~
 The help function is also available:
 ~~~
-python main.py -h
+python main_debugg.py -h
 ~~~
 
-Maybe the final project will include the main program with Arduino and IR-sensor communication and a separate debugging script with only the core algorithm.
+The main.py Script includes the main program with Arduino and IR-sensor communication. The main_debugg.py Script is a debugging/test script with only the core algorithm.
