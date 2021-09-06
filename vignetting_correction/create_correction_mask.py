@@ -23,6 +23,5 @@ for i in range(height):
 plt.imshow(img_mask, cmap="gray")
 plt.colorbar()
 plt.show()
-
 # save the mask as an numpy array
-np.save('vignetting_correction_mask.npy', img_mask)
+#np.save('vignetting_correction_mask.npy', img_mask)

@@ -42,7 +42,7 @@ def canny(img_blur):
     return img_canny
 
 if __name__ == '__main__':
-    img = cv.imread("test_corrected.jpg")[...,0]
+    img = cv.imread("beispiel_cut.jpg")[...,0]
     img_gauss = gaussian_blur(img)
     img_median = median_blur(img)
     img_bil = bilateral_blur(img)
@@ -52,15 +52,15 @@ if __name__ == '__main__':
     img_median_canny = canny(img_median)
     img_bil_canny = canny(img_bil)
 
-    cv.imshow("without blur", img)
+    #cv.imshow("without blur", img)
     cv.imshow("gaussian blur", img_gauss)
-    cv.imshow("median blur", img_median)
-    cv.imshow("bilateral blur", img_bil)
+    #cv.imshow("median blur", img_median)
+    #cv.imshow("bilateral blur", img_bil)
     
-    cv.imshow("canny without blur", img_canny)
-    cv.imshow("canny gaussian blur", img_gauss_canny)
-    cv.imshow("canny median blur", img_median_canny)
-    cv.imshow("canny bilateral blur", img_bil_canny)
+    #cv.imshow("canny without blur", img_canny)
+    #cv.imshow("canny gaussian blur", img_gauss_canny)
+    #cv.imshow("canny median blur", img_median_canny)
+    #cv.imshow("canny bilateral blur", img_bil_canny)
     
     cv.waitKey(0)
     cv.destroyAllWindows()

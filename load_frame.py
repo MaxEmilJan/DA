@@ -1,5 +1,6 @@
 import logging
 import sys
+import cv2 as cv
 
 logger = logging.getLogger(__name__)
 
@@ -16,5 +17,7 @@ def load_frame(img_raw):
         sys.exit(1)
     return img_cut
 
-#img, height, width = load_image("images/Streifen_2,8/3ms_2,8_1.jpg")
-#cv.imwrite("test_roi.jpg", img)
+if __name__=='__main__':
+    img = cv.imread("images/Dataset_Stripe/1,5ms_k2_26.jpg")
+    img = load_frame(img)
+    cv.imwrite("beispiel8.jpg", img)

@@ -21,8 +21,8 @@ if __name__ == '__main__':
     import numpy as np
     import cv2 as cv
     vignett_mask = np.load("vignetting_correction_mask.npy")
-    img_roi = cv.imread("test_image.jpg")[...,0]
+    img_roi = cv.imread("beispiel8.jpg")[...,0]
     img_corrected = vignetting_correction(img_roi, vignett_mask)
-    cv.imwrite("test_corrected.jpg", img_corrected)
+    cv.imwrite("beispiel8.jpg", img_corrected)
     result = np.where(img_corrected == np.amax(img_corrected))
     print(img_corrected[320, 1595])

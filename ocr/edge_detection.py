@@ -47,7 +47,7 @@ def canny_edge_detection(img_preprocessed, filter_close, filter_dil):
             # create a mask which is slightly larger
             mask_fill = np.zeros((h_img + 2, w_img + 2), dtype=np.uint8)
             # flood the image with only white (255) pixels from top left pixel
-            cv.floodFill(img_fill, mask_fill, (0,0), 255)
+            cv.floodFill(img_fill, mask_fill, (100,0), 255)
             # invert the image to obtain the original image but with closed contours only
             img_fill_inv = cv.bitwise_not(img_fill)
             
@@ -63,7 +63,7 @@ def canny_edge_detection(img_preprocessed, filter_close, filter_dil):
             #img_close_2 = cv.morphologyEx(img_dil, cv.MORPH_CLOSE, filter_close)
             # plot the result
             #cv.imshow("Canny", img_canny)
-            #cv.imshow("closed", img_close_2)
+            #cv.imshow("closed", img_close_1)
             #cv.imshow("filtered", img_cnt_delete)
             #cv.imshow("flooded", img_fill_inv)
             #cv.waitKey(0)
