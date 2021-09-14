@@ -25,6 +25,7 @@ sudo apt-get update && sudo apt-get upgrade
 wget https://bootstrap.pypa.io/get-pip.py
 sudo python3 get-pip.py
 rm get-pip.py
+pip3 install --upgrade setuptools
 ~~~
 4. create and activate a virtualenv with python 3.6
 ~~~
@@ -33,15 +34,19 @@ source ./<name_of_your_env>/bin/activate
 ~~~
 from now on the virtualenv should stay activated, since everything is going to get installed in the env
 
-5. install the Baumer NeoAPI by following the official installation guide
+5. download the Baumer NeoAPI
+- open internet explorer
+- paste in url 'https://www.baumer.com/us/en/product-overview/industrial-cameras-image-processing/software/baumer-neoapi/c/42528'
+- download the correct package for your OS und unpack it
+- install it by followning the official installation guide
 
 6. install PyTorch
 ~~~
 wget https://nvidia.box.com/shared/static/p57jwntv436lfrd78inwl7iml6p13fzh.whl -O torch-1.9.0-cp36-cp36m-linux_aarch64.whl
 sudo apt-get install python3-pip libopenblas-base libopenmpi-dev 
 pip install Cython
-pip install numpy==1.19.4 torch-1.8.0-cp36-cp36m-linux_aarch64.whl
-rm torch-1.8.0-cp36-cp36m-linux_aarch64.whl
+pip install numpy==1.19.4 torch-1.9.0-cp36-cp36m-linux_aarch64.whl
+rm torch-1.9.0-cp36-cp36m-linux_aarch64.whl
 ~~~
 7. install easyocr
 ~~~
@@ -108,7 +113,7 @@ sudo apt-get install nano
 ~~~
 * spyder IDE
 ~~~
-pip install spyder
+sudo apt instsll spyder3
 ~~~
 
 ---
