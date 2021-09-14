@@ -113,7 +113,7 @@ sudo apt-get install nano
 ~~~
 * spyder IDE
 ~~~
-sudo apt instsll spyder3
+sudo apt install spyder3
 ~~~
 
 ---
