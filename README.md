@@ -47,3 +47,5 @@ python main_debugg.py -h
 ~~~
 
 The main.py Script includes the main program with Arduino and IR-sensor communication. The main_debugg.py Script is a debugging/test script with only the core algorithm.
+
+
